@@ -1,7 +1,3 @@
-# svelte-repl
+# Learning Svelte Tutorial Builder
 
-This is a minimal implementation of the Svelte REPL.
-
-To install, type `npm install`
-
-To run, type `npm run dev`
+This is for building new tutorials for the Learning Svelte site.
