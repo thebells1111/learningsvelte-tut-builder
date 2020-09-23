@@ -1,5 +1,4 @@
 <script>
-  import { tick } from 'svelte';
   import * as doNotZip from 'do-not-zip';
   export let repl;
   export let appA;
@@ -24,27 +23,44 @@
     downloading = true;
 
     let files = [];
-    let components;
 
-    repl.set(appA);
-    components = repl.toJSON().components;
+    for (let i = 0; i < appA.components.length; i++) {
+      let a = [...appA.components];
+      let c = { ...a[i] };
+      if (c.name === 'Text' && c.type === 'md') {
+        files.push({
+          path: `${c.name}.${c.type}`,
+          data: c.source,
+        });
+        a.splice(i, 1);
+        files.push(
+          ...a.map(component => ({
+            path: `appA/${component.name}.${component.type}`,
+            data: component.source,
+          }))
+        );
+      }
 
-    files.push(
-      ...components.map(component => ({
-        path: `appA/${component.name}.${component.type}`,
-        data: component.source,
-      }))
-    );
+      i = appA.components.length;
+    }
 
-    repl.set(appB);
-    components = repl.toJSON().components;
+    for (let i = 0; i < appB.components.length; i++) {
+      let b = [...appB.components];
+      let c = { ...b[i] };
+      if (c.name === 'Text' && c.type === 'md') {
+        b.splice(i, 1);
+        files.push(
+          ...b.map(component => ({
+            path: `appB/${component.name}.${component.type}`,
+            data: component.source,
+          }))
+        );
+      }
 
-    files.push(
-      ...components.map(component => ({
-        path: `appB/${component.name}.${component.type}`,
-        data: component.source,
-      }))
-    );
+      i = appB.components.length;
+    }
+
+    console.log(files);
 
     downloadBlob(doNotZip.toBlob(files), 'svelte-app.zip');
 
