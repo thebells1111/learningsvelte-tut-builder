@@ -1,0 +1,158 @@
+<script>
+  import { tick } from 'svelte';
+  import * as doNotZip from 'do-not-zip';
+  export let repl;
+  export let appA;
+  export let appB;
+  export let name = 'App';
+
+  let downloading = false;
+
+  function handleKeydown(event) {
+    if (
+      event.key === 's' &&
+      (typeof navigator !== 'undefined' && navigator.platform === 'MacIntel'
+        ? event.metaKey
+        : event.ctrlKey)
+    ) {
+      event.preventDefault();
+      download();
+    }
+  }
+
+  async function download() {
+    downloading = true;
+
+    let files = [];
+    let components;
+
+    repl.set(appA);
+    components = repl.toJSON().components;
+
+    files.push(
+      ...components.map(component => ({
+        path: `appA/${component.name}.${component.type}`,
+        data: component.source,
+      }))
+    );
+
+    repl.set(appB);
+    components = repl.toJSON().components;
+
+    files.push(
+      ...components.map(component => ({
+        path: `appB/${component.name}.${component.type}`,
+        data: component.source,
+      }))
+    );
+
+    downloadBlob(doNotZip.toBlob(files), 'svelte-app.zip');
+
+    downloading = false;
+  }
+
+  function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    URL.revokeObjectURL(url);
+    link.remove();
+  }
+
+  function enter() {
+    return function(node, callback) {
+      node.addEventListener('keydown', handleKeydown);
+
+      function handleKeydown(event) {
+        if (event.keyCode === 13) {
+          callback.call(this, event);
+        }
+      }
+
+      return {
+        destroy() {
+          node.removeEventListener('keydown', handleKeydown);
+        },
+      };
+    };
+  }
+</script>
+
+<style>
+  .app-controls {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem var(--side-nav);
+    background-color: var(--second);
+    color: black;
+    white-space: nowrap;
+    flex: 0;
+    border-bottom: 1px solid gray;
+  }
+
+  .icon {
+    position: relative;
+    top: -0.1rem;
+    display: inline-block;
+    padding: 0.2em;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+    font-family: var(--font);
+    font-size: 1rem;
+    color: black;
+    /* width: 1.6em;
+		height: 1.6em; */
+    line-height: 1;
+    margin: 0 0 0 0.2em;
+  }
+
+  .icon:hover {
+    opacity: 1;
+  }
+  .icon:disabled {
+    opacity: 0.3;
+  }
+
+  input {
+    background: transparent;
+    border: none;
+    color: currentColor;
+    font-family: var(--font);
+    font-size: 1.6rem;
+    opacity: 0.7;
+    outline: none;
+    flex: 1;
+  }
+
+  input:focus {
+    opacity: 1;
+  }
+</style>
+
+<svelte:window on:keydown={handleKeydown} />
+
+<div class="app-controls">
+  <input
+    bind:value={name}
+    on:focus={e => e.target.select()}
+    use:enter={e => e.target.blur()}
+  />
+
+  <button
+    class="icon"
+    disabled={downloading}
+    on:click={download}
+    title="download zip file"
+  >
+    Download
+  </button>
+</div>
