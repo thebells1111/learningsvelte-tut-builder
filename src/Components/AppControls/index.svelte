@@ -3,7 +3,9 @@
   export let repl;
   export let appA;
   export let appB;
-  export let name = 'App';
+  export let projectName = '02-markdown_previewer';
+  export let tutorialName = '08-import-markdown';
+  let currentApp = 'A';
 
   let downloading = false;
 
@@ -29,13 +31,13 @@
       let c = { ...a[i] };
       if (c.name === 'Text' && c.type === 'md') {
         files.push({
-          path: `${c.name}.${c.type}`,
+          path: `${tutorialName}/${c.name}.${c.type}`,
           data: c.source,
         });
         a.splice(i, 1);
         files.push(
           ...a.map(component => ({
-            path: `appA/${component.name}.${component.type}`,
+            path: `${tutorialName}/app-a/${component.name}.${component.type}`,
             data: component.source,
           }))
         );
@@ -51,7 +53,7 @@
         b.splice(i, 1);
         files.push(
           ...b.map(component => ({
-            path: `appB/${component.name}.${component.type}`,
+            path: `${tutorialName}/app-b/${component.name}.${component.type}`,
             data: component.source,
           }))
         );
@@ -62,7 +64,7 @@
 
     console.log(files);
 
-    downloadBlob(doNotZip.toBlob(files), 'svelte-app.zip');
+    downloadBlob(doNotZip.toBlob(files), `${tutorialName}.zip`);
 
     downloading = false;
   }
@@ -96,6 +98,11 @@
       };
     };
   }
+
+  function setApp() {
+    currentApp = currentApp === 'A' ? 'B' : 'A';
+    repl.set(currentApp === 'A' ? appA : appB);
+  }
 </script>
 
 <style>
@@ -115,7 +122,7 @@
     border-bottom: 1px solid gray;
   }
 
-  .icon {
+  button {
     position: relative;
     top: -0.1rem;
     display: inline-block;
@@ -131,21 +138,19 @@
     margin: 0 0 0 0.2em;
   }
 
-  .icon:hover {
+  button:hover {
     opacity: 1;
   }
-  .icon:disabled {
+  button:disabled {
     opacity: 0.3;
   }
 
   input {
     background: transparent;
-    border: none;
     color: currentColor;
     font-family: var(--font);
-    font-size: 1.6rem;
+    font-size: 1rem;
     opacity: 0.7;
-    outline: none;
     flex: 1;
   }
 
@@ -158,17 +163,18 @@
 
 <div class="app-controls">
   <input
-    bind:value={name}
+    bind:value={projectName}
     on:focus={e => e.target.select()}
     use:enter={e => e.target.blur()}
   />
+  <input
+    bind:value={tutorialName}
+    on:focus={e => e.target.select()}
+    use:enter={e => e.target.blur()}
+  />
+  <button on:click={setApp}>App-{currentApp}</button>
 
-  <button
-    class="icon"
-    disabled={downloading}
-    on:click={download}
-    title="download zip file"
-  >
+  <button disabled={downloading} on:click={download} title="download zip file">
     Download
   </button>
 </div>

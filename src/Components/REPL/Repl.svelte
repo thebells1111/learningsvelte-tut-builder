@@ -18,6 +18,7 @@
   export let fixedPos = 50;
   export let injectedJS = '';
   export let injectedCSS = '';
+  export let htmlContent = '';
 
   const historyMap = new Map();
 
@@ -133,6 +134,7 @@
     bundle,
     compile_options,
     foldLines,
+    htmlContent,
 
     rebundle,
 
@@ -228,14 +230,13 @@
   .container {
     position: relative;
     width: 100%;
-    height: calc(100% - 45px);
+    height: 100%;
     background-color: #fff;
     --font: 'Inter', 'Open Sans', 'Helvetica', 'Verdana', sans-serif;
     --font-mono: 'Inconsolata', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono',
       'Courier New', monospace;
-    --prime: rgb(3, 102, 114);
-    --second: #676778;
-    --back-light: #f6fafd;
+    --prime: #005cc5;
+    --back-light: #fff;
   }
 
   .container :global(section) {
@@ -259,20 +260,20 @@
     height: 100%;
   }
 
-  .svelte-repl {
-    background-color: #fff;
-    --font: 'Inter', 'Open Sans', 'Helvetica', 'Verdana', sans-serif;
-    --font-mono: 'Inconsolata', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono',
-      'Courier New', monospace;
-    --prime: #005cc5;
-    --back-light: #fff;
+  .html-content {
+    position: absolute;
+    background-color: white;
+    z-index: 99;
+    top: 0;
+    left: 1px;
+    width: calc(100% - 1px) !important;
   }
 </style>
 
-<div class="container svelte-repl" class:orientation>
+<div class="container" class:orientation>
   <SplitPane
     type={orientation === 'rows' ? 'vertical' : 'horizontal'}
-    pos={fixed ? fixedPos : orientation === 'rows' ? 50 : 60}
+    pos={fixed ? fixedPos : 50}
     {fixed}
   >
     <section slot="a">
@@ -293,6 +294,9 @@
         {injectedJS}
         {injectedCSS}
       />
+      <div class="html-content">
+        {@html htmlContent}
+      </div>
     </section>
   </SplitPane>
 </div>

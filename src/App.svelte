@@ -2,8 +2,16 @@
   import AppControls from './Components/AppControls';
   import Repl from './components/Repl/Repl.svelte';
   import { onMount } from 'svelte';
+  import Split from 'split.js';
+  import marked from 'marked';
   let repl;
-  let currentApp = 'A';
+  let splitInstance;
+  let markdownContent = 'Markdown';
+  let htmlContent = '';
+
+  marked.setOptions({
+    breaks: true,
+  });
 
   let appA = {
     components: [
@@ -15,7 +23,7 @@
       {
         name: 'App',
         type: 'svelte',
-        source: 'Hello',
+        source: 'Very Nice',
       },
     ],
     selectedComponent: 'App.svelte',
@@ -40,19 +48,74 @@
   };
 
   onMount(() => {
+    handleMarkdownInput();
     repl.set(appA);
   });
 
-  function setApp() {
-    currentApp = currentApp === 'A' ? 'B' : 'A';
-    repl.set(currentApp === 'A' ? appA : appB);
+  function handleMarkdownInput() {
+    htmlContent = marked(markdownContent);
+  }
+
+  function splitPane() {
+    function split() {
+      splitInstance = Split(['#editor', '#repl'], {
+        sizes: [100 / 3, 200 / 3],
+        direction: 'horizontal',
+        elementStyle: (dimension, size, gutterSize) => ({
+          'flex-basis': `calc(${size}% - ${gutterSize}px)`,
+        }),
+        gutterStyle: (dimension, gutterSize) => ({
+          'flex-basis': `${gutterSize}px`,
+          background: 'gray',
+          border: 'solid white',
+          'border-width': '0 5px',
+        }),
+        gutterSize: 1,
+      });
+    }
+    split();
+
+    return {
+      update() {
+        splitInstance.destroy();
+        split();
+      },
+    };
   }
 </script>
 
 <style>
+  panel-container {
+    display: flex;
+    width: 100%;
+    height: calc(100% - 45px);
+    border: 1px solid black;
+  }
 
+  textarea {
+    resize: none;
+    overflow: auto;
+    border: none;
+  }
+
+  textarea:focus {
+    border: none;
+    outline: none;
+  }
+  :global(.gutter-horizontal) {
+    cursor: ew-resize;
+  }
 </style>
 
 <AppControls {repl} {appA} {appB} />
-<button on:click={setApp}>App-{currentApp}</button>
-<Repl bind:this={repl} workersUrl="workers" />
+
+<panel-container use:splitPane>
+  <textarea
+    id="editor"
+    on:keyup={handleMarkdownInput}
+    bind:value={markdownContent}
+  />
+  <div id="repl">
+    <Repl bind:this={repl} workersUrl="workers" {htmlContent} />
+  </div>
+</panel-container>
