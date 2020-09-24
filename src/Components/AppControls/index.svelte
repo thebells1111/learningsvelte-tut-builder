@@ -6,6 +6,8 @@
   export let projectName = '02-markdown_previewer';
   export let tutorialName = '08-import-markdown';
   let currentApp = 'A';
+  export let showMarkdownPreview = false;
+  export let markdownContent;
 
   let downloading = false;
 
@@ -26,45 +28,29 @@
 
     let files = [];
 
-    for (let i = 0; i < appA.components.length; i++) {
-      let a = [...appA.components];
-      let c = { ...a[i] };
-      if (c.name === 'Text' && c.type === 'md') {
-        files.push({
-          path: `${tutorialName}/${c.name}.${c.type}`,
-          data: c.source,
-        });
-        a.splice(i, 1);
-        files.push(
-          ...a.map(component => ({
-            path: `${tutorialName}/app-a/${component.name}.${component.type}`,
-            data: component.source,
-          }))
-        );
-      }
+    let a = [...appA.components];
+    let b = [...appB.components];
+    files.push({
+      path: `${tutorialName}/text.md`,
+      data: markdownContent,
+    });
+    files.push(
+      ...a.map(component => ({
+        path: `${tutorialName}/app-a/${component.name}.${component.type}`,
+        data: component.source,
+      }))
+    );
 
-      i = appA.components.length;
-    }
-
-    for (let i = 0; i < appB.components.length; i++) {
-      let b = [...appB.components];
-      let c = { ...b[i] };
-      if (c.name === 'Text' && c.type === 'md') {
-        b.splice(i, 1);
-        files.push(
-          ...b.map(component => ({
-            path: `${tutorialName}/app-b/${component.name}.${component.type}`,
-            data: component.source,
-          }))
-        );
-      }
-
-      i = appB.components.length;
-    }
+    files.push(
+      ...b.map(component => ({
+        path: `${tutorialName}/app-b/${component.name}.${component.type}`,
+        data: component.source,
+      }))
+    );
 
     console.log(files);
 
-    downloadBlob(doNotZip.toBlob(files), `${tutorialName}.zip`);
+    //downloadBlob(doNotZip.toBlob(files), `${tutorialName}.zip`);
 
     downloading = false;
   }
@@ -103,7 +89,69 @@
     currentApp = currentApp === 'A' ? 'B' : 'A';
     repl.set(currentApp === 'A' ? appA : appB);
   }
+
+  function handleFiles(e) {
+    let files = [...e.target.files];
+    let newAppA = [];
+    let newAppB = [];
+    let fileObjs = [];
+
+    files.forEach((v, i) => {
+      fileObjs[i] = {};
+      let o = fileObjs[i];
+      o.path = v.webkitRelativePath;
+      let directories = o.path.split('/');
+      let directoryLevelOne = directories[directories.length - 2];
+
+      if (v.name === 'text.md') {
+        tutorialName = directoryLevelOne;
+        const reader = new FileReader();
+        reader.readAsText(e.target.files[i]);
+        reader.onload = event => {
+          markdownContent = event.target.result;
+        };
+      }
+
+      if (directoryLevelOne == 'app-a') {
+        let appFile = v.name.split('.');
+        newAppA.push({
+          name: appFile[0],
+          type: appFile[1],
+        });
+      }
+    });
+    console.log(newAppA);
+  }
+  // const reader = new FileReader();
+  // reader.readAsText(file);
+  // reader.onload = (event) => {
+  //   content = event.target.result;
+  // };
 </script>
+
+<svelte:window on:keydown={handleKeydown} />
+
+<div class="app-controls">
+  <input type="file" webkitdirectory mozdirectory on:change={handleFiles} />
+  <input
+    bind:value={projectName}
+    on:focus={e => e.target.select()}
+    use:enter={e => e.target.blur()}
+  />
+  <input
+    bind:value={tutorialName}
+    on:focus={e => e.target.select()}
+    use:enter={e => e.target.blur()}
+  />
+  <button on:click={() => (showMarkdownPreview = !showMarkdownPreview)}>
+    {showMarkdownPreview ? 'Code' : 'Tutorial'}
+  </button>
+  <button on:click={setApp}>App-{currentApp}</button>
+
+  <button disabled={downloading} on:click={download} title="download zip file">
+    Download
+  </button>
+</div>
 
 <style>
   .app-controls {
@@ -119,7 +167,6 @@
     color: black;
     white-space: nowrap;
     flex: 0;
-    border-bottom: 1px solid gray;
   }
 
   button {
@@ -158,23 +205,3 @@
     opacity: 1;
   }
 </style>
-
-<svelte:window on:keydown={handleKeydown} />
-
-<div class="app-controls">
-  <input
-    bind:value={projectName}
-    on:focus={e => e.target.select()}
-    use:enter={e => e.target.blur()}
-  />
-  <input
-    bind:value={tutorialName}
-    on:focus={e => e.target.select()}
-    use:enter={e => e.target.blur()}
-  />
-  <button on:click={setApp}>App-{currentApp}</button>
-
-  <button disabled={downloading} on:click={download} title="download zip file">
-    Download
-  </button>
-</div>

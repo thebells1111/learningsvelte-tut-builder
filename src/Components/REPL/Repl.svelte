@@ -19,6 +19,7 @@
   export let injectedJS = '';
   export let injectedCSS = '';
   export let htmlContent = '';
+  export let showMarkdownPreview = false;
 
   const historyMap = new Map();
 
@@ -226,6 +227,40 @@
   }
 </script>
 
+<div class="container" class:orientation>
+  <SplitPane
+    type={orientation === 'rows' ? 'vertical' : 'horizontal'}
+    pos={fixed ? fixedPos : 50}
+    {fixed}
+  >
+    <section slot="a">
+      <ComponentSelector {handle_select} />
+      <ModuleEditor
+        bind:this={input}
+        errorLoc={sourceErrorLoc || runtimeErrorLoc}
+      />
+    </section>
+
+    <section slot="b" style="height: 100%;">
+      <Output
+        {svelteUrl}
+        {workersUrl}
+        {status}
+        {embedded}
+        {relaxed}
+        {injectedJS}
+        {injectedCSS}
+      />
+      <div
+        class="markdown-preview"
+        class:show-markdown-preview={showMarkdownPreview}
+      >
+        {@html htmlContent}
+      </div>
+    </section>
+  </SplitPane>
+</div>
+
 <style>
   .container {
     position: relative;
@@ -260,43 +295,17 @@
     height: 100%;
   }
 
-  .html-content {
+  .markdown-preview {
     position: absolute;
     background-color: white;
     z-index: 99;
     top: 0;
     left: 1px;
     width: calc(100% - 1px) !important;
+    display: none;
+  }
+
+  .show-markdown-preview {
+    display: block;
   }
 </style>
-
-<div class="container" class:orientation>
-  <SplitPane
-    type={orientation === 'rows' ? 'vertical' : 'horizontal'}
-    pos={fixed ? fixedPos : 50}
-    {fixed}
-  >
-    <section slot="a">
-      <ComponentSelector {handle_select} />
-      <ModuleEditor
-        bind:this={input}
-        errorLoc={sourceErrorLoc || runtimeErrorLoc}
-      />
-    </section>
-
-    <section slot="b" style="height: 100%;">
-      <Output
-        {svelteUrl}
-        {workersUrl}
-        {status}
-        {embedded}
-        {relaxed}
-        {injectedJS}
-        {injectedCSS}
-      />
-      <div class="html-content">
-        {@html htmlContent}
-      </div>
-    </section>
-  </SplitPane>
-</div>

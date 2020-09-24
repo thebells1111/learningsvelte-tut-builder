@@ -104,6 +104,34 @@
   $: dimension = type === 'horizontal' ? 'width' : 'height';
 </script>
 
+<div
+  class="container"
+  bind:this={refs.container}
+  bind:clientWidth={w}
+  bind:clientHeight={h}
+>
+  <div class="pane" style="{dimension}: {pos}%;">
+    <slot name="a" />
+  </div>
+
+  <div class="pane" style="{dimension}: {100 - pos}%;">
+    <slot name="b" />
+  </div>
+
+  {#if !fixed}
+    <div
+      class="{type} divider"
+      style="{side}: calc({pos}% - 8px)"
+      use:drag={setPos}
+      use:touchDrag={setTouchPos}
+    />
+  {/if}
+</div>
+
+{#if dragging}
+  <div class="mousecatcher" />
+{/if}
+
 <style>
   .container {
     position: relative;
@@ -138,7 +166,7 @@
     content: '';
     position: absolute;
     /* background-color: #eee; */
-    background-color: var(--second);
+    background-color: gray;
   }
 
   .horizontal {
@@ -194,31 +222,3 @@
     bottom: 0;
   }
 </style>
-
-<div
-  class="container"
-  bind:this={refs.container}
-  bind:clientWidth={w}
-  bind:clientHeight={h}
->
-  <div class="pane" style="{dimension}: {pos}%;">
-    <slot name="a" />
-  </div>
-
-  <div class="pane" style="{dimension}: {100 - pos}%;">
-    <slot name="b" />
-  </div>
-
-  {#if !fixed}
-    <div
-      class="{type} divider"
-      style="{side}: calc({pos}% - 8px)"
-      use:drag={setPos}
-      use:touchDrag={setTouchPos}
-    />
-  {/if}
-</div>
-
-{#if dragging}
-  <div class="mousecatcher" />
-{/if}
