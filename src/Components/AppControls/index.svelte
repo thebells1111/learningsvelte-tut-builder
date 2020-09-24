@@ -7,7 +7,7 @@
   export let tutorialName = '08-import-markdown';
   let currentApp = 'A';
   export let showMarkdownPreview = false;
-  export let markdownContent;
+  export let mde;
 
   let downloading = false;
 
@@ -108,7 +108,7 @@
         const reader = new FileReader();
         reader.readAsText(e.target.files[i]);
         reader.onload = event => {
-          markdownContent = event.target.result;
+          mde.value(event.target.result);
         };
       }
 

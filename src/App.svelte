@@ -4,11 +4,13 @@
   import { onMount } from 'svelte';
   import Split from 'split.js';
   import marked from 'marked';
+  import SimpleMDE from 'simplemde';
   let repl;
   let splitInstance;
-  let markdownContent = '# Markdown';
+  let markdownContent = '';
   $: htmlContent = marked(markdownContent);
   let showMarkdownPreview;
+  let mde;
 
   marked.setOptions({
     breaks: true,
@@ -40,6 +42,43 @@
 
   onMount(() => {
     repl.set(appA);
+    mde = new SimpleMDE({
+      forceSync: true,
+      indentWithTabs: false,
+      insertTexts: {
+        horizontalRule: ['', '\n\n-----\n\n'],
+      },
+
+      status: false,
+      renderingConfig: {
+        codeSyntaxHighlighting: true,
+      },
+      toolbar: [
+        'horizontal-rule',
+        '|',
+        'bold',
+        'italic',
+        'strikethrough',
+        '|',
+        'heading',
+        'heading-smaller',
+        'heading-bigger',
+        '|',
+        'quote',
+        'code',
+        '|',
+        'unordered-list',
+        'ordered-list',
+        '|',
+        'link',
+        'image',
+        '|',
+        'clean-block',
+      ],
+    });
+    mde.codemirror.on('change', function() {
+      markdownContent = mde.value();
+    });
   });
 
   function splitPane() {
@@ -70,16 +109,12 @@
   }
 </script>
 
-<AppControls
-  {repl}
-  {appA}
-  {appB}
-  bind:markdownContent
-  bind:showMarkdownPreview
-/>
+<AppControls {repl} {appA} {appB} {mde} bind:showMarkdownPreview />
 
 <panel-container use:splitPane>
-  <textarea id="editor" bind:value={markdownContent} />
+  <div id="editor">
+    <textarea />
+  </div>
   <div id="repl">
     <Repl
       bind:this={repl}
