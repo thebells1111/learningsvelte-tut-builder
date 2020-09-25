@@ -90,49 +90,64 @@
     repl.set(currentApp === 'A' ? appA : appB);
   }
 
-  function handleFiles(e) {
-    let files = [...e.target.files];
+  async function handleFileUpload(e) {
     let newAppA = [];
     let newAppB = [];
-    let fileObjs = [];
-
-    files.forEach((v, i) => {
-      fileObjs[i] = {};
-      let o = fileObjs[i];
-      o.path = v.webkitRelativePath;
-      let directories = o.path.split('/');
+    for (let file of e.target.files) {
+      let relativePath = file.webkitRelativePath;
+      let directories = relativePath.split('/');
       let directoryLevelOne = directories[directories.length - 2];
 
-      if (v.name === 'text.md') {
+      if (file.name === 'text.md') {
         tutorialName = directoryLevelOne;
-        const reader = new FileReader();
-        reader.readAsText(e.target.files[i]);
-        reader.onload = event => {
-          mde.value(event.target.result);
-        };
+        mde.value(await readFileAsync(file));
+      } else {
+        let appFile = file.name.split('.');
+        let source = await readFileAsync(file);
+        if (directoryLevelOne == 'app-a') {
+          newAppA.push({
+            name: appFile[0],
+            type: appFile[1],
+            source: source,
+          });
+        } else if (directoryLevelOne == 'app-b') {
+          newAppB.push({
+            name: appFile[0],
+            type: appFile[1],
+            source: source,
+          });
+        }
       }
-
-      if (directoryLevelOne == 'app-a') {
-        let appFile = v.name.split('.');
-        newAppA.push({
-          name: appFile[0],
-          type: appFile[1],
-        });
-      }
-    });
-    console.log(newAppA);
+    }
+    appA = { components: newAppA };
+    appB = { components: newAppB };
+    repl.set(currentApp === 'A' ? appA : appB);
   }
-  // const reader = new FileReader();
-  // reader.readAsText(file);
-  // reader.onload = (event) => {
-  //   content = event.target.result;
-  // };
+
+  function readFileAsync(file) {
+    return new Promise((resolve, reject) => {
+      let reader = new FileReader();
+
+      reader.onload = () => {
+        resolve(reader.result);
+      };
+
+      reader.onerror = reject;
+
+      reader.readAsText(file);
+    });
+  }
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
 
 <div class="app-controls">
-  <input type="file" webkitdirectory mozdirectory on:change={handleFiles} />
+  <input
+    type="file"
+    webkitdirectory
+    mozdirectory
+    on:change={handleFileUpload}
+  />
   <input
     bind:value={projectName}
     on:focus={e => e.target.select()}

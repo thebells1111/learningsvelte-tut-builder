@@ -43,6 +43,7 @@
     mde.codemirror.on('change', function() {
       markdownContent = mde.value();
     });
+    mde.value('');
   });
 </script>
 
