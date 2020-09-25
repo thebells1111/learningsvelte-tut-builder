@@ -1,20 +1,18 @@
 <script>
-  import AppControls from './Components/AppControls';
-  import Repl from './components/Repl/Repl.svelte';
   import { onMount } from 'svelte';
-  import Split from 'split.js';
+  import AppControls from './Components/AppControls.svelte';
+  import MarkdownEditor from './Components/MarkdownEditor.svelte';
+  import Repl from './components/Repl/Repl.svelte';
   import marked from 'marked';
-  import SimpleMDE from 'simplemde';
+
+  import Split from 'split.js';
   let repl;
   let splitInstance;
+
+  let showMarkdownPreview;
   let markdownContent = '';
   $: htmlContent = marked(markdownContent);
-  let showMarkdownPreview;
   let mde;
-
-  marked.setOptions({
-    breaks: true,
-  });
 
   let appA = {
     components: [
@@ -42,43 +40,6 @@
 
   onMount(() => {
     repl.set(appA);
-    mde = new SimpleMDE({
-      forceSync: true,
-      indentWithTabs: false,
-      insertTexts: {
-        horizontalRule: ['', '\n\n-----\n\n'],
-      },
-
-      status: false,
-      renderingConfig: {
-        codeSyntaxHighlighting: true,
-      },
-      toolbar: [
-        'horizontal-rule',
-        '|',
-        'bold',
-        'italic',
-        'strikethrough',
-        '|',
-        'heading',
-        'heading-smaller',
-        'heading-bigger',
-        '|',
-        'quote',
-        'code',
-        '|',
-        'unordered-list',
-        'ordered-list',
-        '|',
-        'link',
-        'image',
-        '|',
-        'clean-block',
-      ],
-    });
-    mde.codemirror.on('change', function() {
-      markdownContent = mde.value();
-    });
   });
 
   function splitPane() {
@@ -109,12 +70,20 @@
   }
 </script>
 
-<AppControls {repl} {appA} {appB} {mde} bind:showMarkdownPreview />
+<AppControls
+  {repl}
+  {appA}
+  {appB}
+  {mde}
+  bind:showMarkdownPreview
+  bind:htmlContent
+/>
 
 <panel-container use:splitPane>
   <div id="editor">
-    <textarea />
+    <MarkdownEditor bind:markdownContent bind:mde />
   </div>
+
   <div id="repl">
     <Repl
       bind:this={repl}
@@ -133,16 +102,6 @@
     border: 1px solid gray;
   }
 
-  textarea {
-    resize: none;
-    overflow: auto;
-    border: none;
-  }
-
-  textarea:focus {
-    border: none;
-    outline: none;
-  }
   :global(.gutter-horizontal) {
     cursor: ew-resize;
   }

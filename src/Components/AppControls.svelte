@@ -11,6 +11,10 @@
 
   let downloading = false;
 
+  marked.setOptions({
+    breaks: true,
+  });
+
   function handleKeydown(event) {
     if (
       event.key === 's' &&
