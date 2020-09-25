@@ -5,6 +5,10 @@
   import Repl from './components/Repl/Repl.svelte';
   import marked from 'marked';
 
+  marked.setOptions({
+    breaks: true,
+  });
+
   import Split from 'split.js';
   let repl;
   let splitInstance;
@@ -52,7 +56,6 @@
         }),
         gutterStyle: (dimension, gutterSize) => ({
           'flex-basis': `${gutterSize}px`,
-          background: 'gray',
           border: 'solid white',
           'border-width': '0 5px',
         }),
@@ -104,5 +107,11 @@
 
   :global(.gutter-horizontal) {
     cursor: ew-resize;
+  }
+
+  #editor {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid gray;
   }
 </style>

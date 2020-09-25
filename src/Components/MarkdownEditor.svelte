@@ -59,4 +59,23 @@
     border: none;
     outline: none;
   }
+
+  :global(.editor-toolbar) {
+    padding: 3px 2px;
+  }
+
+  :global(.editor-toolbar > a) {
+    padding: 2px;
+    border: 1px solid black;
+    margin: 0 1px;
+    border-radius: 3px;
+  }
+
+  :global(.separator) {
+    padding: 2px;
+    opacity: 0;
+  }
+  :global(#editor > .CodeMirror) {
+    flex-grow: 1;
+  }
 </style>
