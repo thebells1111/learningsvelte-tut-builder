@@ -32,7 +32,7 @@
     let b = [...appB.components];
     files.push({
       path: `${tutorialName}/text.md`,
-      data: markdownContent,
+      data: mde.value(),
     });
     files.push(
       ...a.map(component => ({
