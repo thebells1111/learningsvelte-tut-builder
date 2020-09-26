@@ -20,6 +20,7 @@
   export let injectedCSS = '';
   export let htmlContent = '';
   export let showMarkdownPreview = false;
+  export let selectedComponent;
 
   const historyMap = new Map();
 
@@ -191,6 +192,7 @@
   });
 
   function handle_select(component) {
+    selectedComponent = component.name + '.' + component.type;
     historyMap.set(get_component_name($selected), module_editor.getHistory());
     selected.set(component);
     module_editor.set(component.source, component.type);

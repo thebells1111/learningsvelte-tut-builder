@@ -17,6 +17,7 @@
   let markdownContent = '';
   $: htmlContent = marked(markdownContent);
   let mde;
+  let selectedComponent;
 
   let appA = {
     components: [
@@ -78,6 +79,7 @@
   {appA}
   {appB}
   {mde}
+  {selectedComponent}
   bind:showMarkdownPreview
   bind:htmlContent
 />
@@ -91,6 +93,7 @@
     <Repl
       bind:this={repl}
       workersUrl="workers"
+      bind:selectedComponent
       {htmlContent}
       {showMarkdownPreview}
     />

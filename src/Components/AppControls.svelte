@@ -8,6 +8,7 @@
   let currentApp = 'A';
   export let showMarkdownPreview = false;
   export let mde;
+  export let selectedComponent;
 
   let downloading = false;
 
@@ -87,7 +88,9 @@
 
   function setApp() {
     currentApp = currentApp === 'A' ? 'B' : 'A';
-    repl.set(currentApp === 'A' ? appA : appB);
+    let newApp = currentApp === 'A' ? { ...appA } : { ...appB };
+    newApp.selectedComponent = selectedComponent;
+    repl.set(newApp);
   }
 
   async function handleFileUpload(e) {
