@@ -13,14 +13,13 @@
   export let svelteUrl = `${packagesUrl}/svelte`;
   export let embedded = false;
   export let orientation = 'columns';
-  export let relaxed = false;
+  export let relaxed = true;
   export let fixed = false;
   export let fixedPos = 50;
   export let injectedJS = '';
   export let injectedCSS = '';
   export let htmlContent = '';
   export let showMarkdownPreview = false;
-  export let selectedComponent;
 
   const historyMap = new Map();
 
@@ -67,6 +66,10 @@
         module_editor.foldString(line);
       }
     });
+  }
+
+  export function get_selected_component() {
+    return get_component_name($selected);
   }
 
   export function update(data) {
@@ -192,7 +195,6 @@
   });
 
   function handle_select(component) {
-    selectedComponent = component.name + '.' + component.type;
     historyMap.set(get_component_name($selected), module_editor.getHistory());
     selected.set(component);
     module_editor.set(component.source, component.type);

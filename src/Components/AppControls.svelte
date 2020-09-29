@@ -1,22 +1,43 @@
 <script>
+  import { onMount } from 'svelte';
   import * as doNotZip from 'do-not-zip';
   import directories from './directories.json';
   export let repl;
-  export let appA;
-  export let appB;
-  export let projectName = '01-random_quote_machine';
-  export let tutorialName = '01-intro';
+  let blankApp = {
+    components: [
+      {
+        name: 'App',
+        type: 'svelte',
+        source: '',
+      },
+    ],
+    selectedComponent: 'App.svelte',
+    foldLine: [],
+  };
+  let appA = { ...blankApp };
+  let appB = { ...blankApp };
+  let projectName = '01-random_quote_machine';
+  let newProjectName;
+  let chapterName = '01-intro';
+  let newchapterName = '';
   let currentApp = 'A';
   export let showMarkdownPreview = false;
   export let mde;
-  export let selectedComponent;
 
   let projects = Object.keys(directories).sort();
-  $: tutorials = projectName
-    ? Object.keys(directories[projectName]).sort()
-    : '';
 
-  let downloading = false;
+  $: chapters =
+    projectName !== 'Create New Project'
+      ? Object.keys(directories[projectName]).sort()
+      : '';
+
+  onMount(function mount() {
+    if (repl && mde) {
+      selectNewApp();
+    } else {
+      setTimeout(mount, 1);
+    }
+  });
 
   function handleKeydown(event) {
     if (
@@ -30,6 +51,7 @@
     }
   }
 
+  let downloading = false;
   async function download() {
     downloading = true;
 
@@ -38,26 +60,26 @@
     let a = [...appA.components];
     let b = [...appB.components];
     files.push({
-      path: `${tutorialName}/text.md`,
+      path: `${chapterName}/text.md`,
       data: mde.value(),
     });
     files.push(
       ...a.map(component => ({
-        path: `${tutorialName}/app-a/${component.name}.${component.type}`,
+        path: `${chapterName}/app-a/${component.name}.${component.type}`,
         data: component.source,
       }))
     );
 
     files.push(
       ...b.map(component => ({
-        path: `${tutorialName}/app-b/${component.name}.${component.type}`,
+        path: `${chapterName}/app-b/${component.name}.${component.type}`,
         data: component.source,
       }))
     );
 
     console.log(files);
 
-    //downloadBlob(doNotZip.toBlob(files), `${tutorialName}.zip`);
+    //downloadBlob(doNotZip.toBlob(files), `${chapterName}.zip`);
 
     downloading = false;
   }
@@ -92,11 +114,17 @@
     };
   }
 
+  function focus(node) {
+    node.focus();
+  }
+
   function setApp() {
-    currentApp = currentApp === 'A' ? 'B' : 'A';
-    let newApp = currentApp === 'A' ? { ...appA } : { ...appB };
-    newApp.selectedComponent = selectedComponent;
-    repl.set(newApp);
+    if (appB) {
+      currentApp = currentApp === 'A' ? 'B' : 'A';
+      let newApp = currentApp === 'A' ? { ...appA } : { ...appB };
+      newApp.selectedComponent = repl.get_selected_component();
+      repl.set(newApp);
+    }
   }
 
   async function handleFileUpload(e) {
@@ -108,7 +136,7 @@
       let directoryLevelOne = directories[directories.length - 2];
 
       if (file.name === 'text.md') {
-        tutorialName = directoryLevelOne;
+        chapterName = directoryLevelOne;
         mde.value(await readFileAsync(file));
       } else {
         let appFile = file.name.split('.');
@@ -148,11 +176,53 @@
   }
 
   function selectNewApp() {
-    currentApp = 'A';
-    appA.components = directories[projectName][tutorialName].appA;
-    appB.components = directories[projectName][tutorialName].appB;
-    mde.value(directories[projectName][tutorialName].text.source);
-    repl.set(appA);
+    if (projectName !== 'Create New Project') {
+      currentApp = 'A';
+      appA.components = directories[projectName][chapterName].appA;
+      if (directories[projectName][chapterName].appB) {
+        appB = {};
+        appB.components = directories[projectName][chapterName].appB;
+      } else {
+        appB = undefined;
+      }
+      mde.value(directories[projectName][chapterName].text.source);
+      repl.set(appA);
+    }
+  }
+  function createNewProject(e) {
+    directories[newProjectName] = {};
+    directories[newProjectName].meta = '';
+    directories[newProjectName]['01-intro'] = {};
+    directories[newProjectName]['01-intro'].appA = [
+      {
+        name: 'App',
+        type: 'svelte',
+        source: 'New Project',
+      },
+    ];
+    directories[newProjectName]['01-intro'].appB = undefined;
+
+    directories[newProjectName]['01-intro'].text = {
+      name: 'text',
+      type: 'md',
+      source: '',
+    };
+
+    projectName = newProjectName;
+    chapterName = '01-intro';
+    projects = Object.keys(directories).sort();
+    selectNewApp();
+  }
+
+  function enterNewProject(e) {
+    let projectNumbers = projects.map(v => {
+      return parseInt(v);
+    });
+    let nextProjectNumber = projectNumbers[projectNumbers.length - 1] + 1;
+    nextProjectNumber =
+      nextProjectNumber < 10 ? '0' + nextProjectNumber : nextProjectNumber;
+
+    newProjectName = `${nextProjectNumber} - `;
   }
 </script>
 
@@ -165,38 +235,40 @@
     mozdirectory
     on:change={handleFileUpload}
   /> -->
-
-  {#if projectName}
+  {projectName}
+  {#if projectName !== 'Create New Project'}
     <select bind:value={projectName} on:change={selectNewApp}>
       {#each projects as project}
         <option value={project}>{project}</option>
       {/each}
-      <option value="" />
+      <option value="Create New Project">Create New Project</option>
     </select>
   {:else}
     <input
-      bind:value={projectName}
-      on:focus={e => e.target.select()}
+      bind:value={newProjectName}
+      on:focus={enterNewProject}
+      on:blur={createNewProject}
       use:enter={e => e.target.blur()}
+      use:focus
     />
   {/if}
-  {#if tutorialName}
-    <select bind:value={tutorialName} on:change={selectNewApp}>
-      {#each tutorials as tutorial}
-        <option value={tutorial}>{tutorial}</option>
+  {#if chapterName}
+    <select bind:value={chapterName} on:change={selectNewApp}>
+      {#each chapters as chapter}
+        <option value={chapter}>{chapter}</option>
       {/each}
       <option value="" />
     </select>
   {:else}
     <input
-      bind:value={tutorialName}
+      bind:value={chapterName}
       on:focus={e => e.target.select()}
       use:enter={e => e.target.blur()}
     />
   {/if}
 
   <button on:click={() => (showMarkdownPreview = !showMarkdownPreview)}>
-    {showMarkdownPreview ? 'Code' : 'Tutorial'}
+    {showMarkdownPreview ? 'Code' : 'chapter'}
   </button>
   <button on:click={setApp}>App-{currentApp}</button>
 

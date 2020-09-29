@@ -1,5 +1,4 @@
 <script>
-  import { onMount } from 'svelte';
   import AppControls from './Components/AppControls.svelte';
   import MarkdownEditor from './Components/MarkdownEditor.svelte';
   import Repl from './components/Repl/Repl.svelte';
@@ -9,44 +8,15 @@
     breaks: true,
   });
 
-  import Split from 'split.js';
   let repl;
-  let splitInstance;
 
   let showMarkdownPreview;
   let markdownContent = '';
   $: htmlContent = marked(markdownContent);
   let mde;
-  let selectedComponent;
 
-  let appA = {
-    components: [
-      {
-        name: 'App',
-        type: 'svelte',
-        source: 'Very Nice',
-      },
-    ],
-    selectedComponent: 'App.svelte',
-    foldLine: [],
-  };
-
-  let appB = {
-    components: [
-      {
-        name: 'App',
-        type: 'svelte',
-        source: 'World',
-      },
-    ],
-    selectedComponent: 'App.svelte',
-    foldLine: [],
-  };
-
-  onMount(() => {
-    repl.set(appA);
-  });
-
+  import Split from 'split.js';
+  let splitInstance;
   function splitPane() {
     function split() {
       splitInstance = Split(['#editor', '#repl'], {
@@ -74,15 +44,7 @@
   }
 </script>
 
-<AppControls
-  {repl}
-  {appA}
-  {appB}
-  {mde}
-  {selectedComponent}
-  bind:showMarkdownPreview
-  bind:htmlContent
-/>
+<AppControls {repl} {mde} bind:showMarkdownPreview bind:htmlContent />
 
 <panel-container use:splitPane>
   <div id="editor">
@@ -93,7 +55,6 @@
     <Repl
       bind:this={repl}
       workersUrl="workers"
-      bind:selectedComponent
       {htmlContent}
       {showMarkdownPreview}
     />
