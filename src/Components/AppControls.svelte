@@ -1,14 +1,20 @@
 <script>
   import * as doNotZip from 'do-not-zip';
+  import directories from './directories.json';
   export let repl;
   export let appA;
   export let appB;
-  export let projectName = '02-markdown_previewer';
-  export let tutorialName = '08-import-markdown';
+  export let projectName = '01-random_quote_machine';
+  export let tutorialName = '01-intro';
   let currentApp = 'A';
   export let showMarkdownPreview = false;
   export let mde;
   export let selectedComponent;
+
+  let projects = Object.keys(directories).sort();
+  $: tutorials = projectName
+    ? Object.keys(directories[projectName]).sort()
+    : '';
 
   let downloading = false;
 
@@ -140,27 +146,55 @@
       reader.readAsText(file);
     });
   }
+
+  function selectNewApp() {
+    currentApp = 'A';
+    appA.components = directories[projectName][tutorialName].appA;
+    appB.components = directories[projectName][tutorialName].appB;
+    mde.value(directories[projectName][tutorialName].text.source);
+    repl.set(appA);
+  }
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
 
 <div class="app-controls">
-  <input
+  <!-- <input
     type="file"
     webkitdirectory
     mozdirectory
     on:change={handleFileUpload}
-  />
-  <input
-    bind:value={projectName}
-    on:focus={e => e.target.select()}
-    use:enter={e => e.target.blur()}
-  />
-  <input
-    bind:value={tutorialName}
-    on:focus={e => e.target.select()}
-    use:enter={e => e.target.blur()}
-  />
+  /> -->
+
+  {#if projectName}
+    <select bind:value={projectName} on:change={selectNewApp}>
+      {#each projects as project}
+        <option value={project}>{project}</option>
+      {/each}
+      <option value="" />
+    </select>
+  {:else}
+    <input
+      bind:value={projectName}
+      on:focus={e => e.target.select()}
+      use:enter={e => e.target.blur()}
+    />
+  {/if}
+  {#if tutorialName}
+    <select bind:value={tutorialName} on:change={selectNewApp}>
+      {#each tutorials as tutorial}
+        <option value={tutorial}>{tutorial}</option>
+      {/each}
+      <option value="" />
+    </select>
+  {:else}
+    <input
+      bind:value={tutorialName}
+      on:focus={e => e.target.select()}
+      use:enter={e => e.target.blur()}
+    />
+  {/if}
+
   <button on:click={() => (showMarkdownPreview = !showMarkdownPreview)}>
     {showMarkdownPreview ? 'Code' : 'Tutorial'}
   </button>
