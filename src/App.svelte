@@ -1,5 +1,5 @@
 <script>
-  import AppControls from './Components/AppControls.svelte';
+  import AppControls from './Components/AppControls/';
   import MarkdownEditor from './Components/MarkdownEditor.svelte';
   import Repl from './components/Repl/Repl.svelte';
   import marked from 'marked';
