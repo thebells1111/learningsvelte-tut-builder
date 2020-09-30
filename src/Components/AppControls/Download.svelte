@@ -22,7 +22,7 @@
     let files = [];
 
     let a = [...appA.components];
-    let b = appB && [...appB.components];
+    let b = appB ? [...appB.components] : [];
     files.push({
       path: `${chapterName}/text.md`,
       data: mde.value(),

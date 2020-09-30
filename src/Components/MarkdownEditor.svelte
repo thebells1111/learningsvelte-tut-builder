@@ -1,12 +1,12 @@
 <script>
-  import { onMount } from 'svelte';
+  import { onMount, getContext } from 'svelte';
   import SimpleMDE from 'simplemde';
 
   export let markdownContent = '';
-  export let mde;
+  const { mde } = getContext('Controls');
 
   onMount(() => {
-    mde = new SimpleMDE({
+    $mde = new SimpleMDE({
       forceSync: true,
       indentWithTabs: false,
       insertTexts: {
@@ -40,10 +40,10 @@
         'clean-block',
       ],
     });
-    mde.codemirror.on('change', function() {
-      markdownContent = mde.value();
+    $mde.codemirror.on('change', function() {
+      markdownContent = $mde.value();
     });
-    mde.value('');
+    $mde.value('');
   });
 </script>
 

@@ -2,18 +2,12 @@
   import AppControls from './Components/AppControls/';
   import MarkdownEditor from './Components/MarkdownEditor.svelte';
   import Repl from './components/Repl/Repl.svelte';
+  import directoriesJSON from './directories.json';
   import marked from 'marked';
 
   marked.setOptions({
     breaks: true,
   });
-
-  let repl;
-
-  let showMarkdownPreview;
-  let markdownContent = '';
-  $: htmlContent = marked(markdownContent);
-  let mde;
 
   import Split from 'split.js';
   let splitInstance;
@@ -42,13 +36,48 @@
       },
     };
   }
+
+  import { readable, writable } from 'svelte/store';
+  import { setContext } from 'svelte';
+  let repl;
+  let showMarkdownPreview;
+  let markdownContent = '';
+  $: htmlContent = marked(markdownContent);
+  const blankApp = readable({
+    components: [
+      {
+        name: 'App',
+        type: 'svelte',
+        source: '',
+      },
+    ],
+    selectedComponent: 'App.svelte',
+    foldLine: [],
+  });
+  const appA = writable({ ...$blankApp });
+  const appB = writable({ ...$blankApp });
+  const mde = writable(null);
+  const directories = writable(directoriesJSON);
+  const currentApp = writable('A');
+  let projectName = '01-random_quote_machine';
+  let chapterName = '01-intro';
+  let newchapterName = '';
+
+  setContext('Controls', {
+    appA,
+    appB,
+    mde,
+    blankApp,
+    directories,
+    currentApp,
+  });
 </script>
 
-<AppControls {repl} {mde} bind:showMarkdownPreview bind:htmlContent />
+<AppControls {repl} bind:showMarkdownPreview bind:htmlContent />
 
 <panel-container use:splitPane>
   <div id="editor">
-    <MarkdownEditor bind:markdownContent bind:mde />
+    <MarkdownEditor bind:markdownContent />
   </div>
 
   <div id="repl">
