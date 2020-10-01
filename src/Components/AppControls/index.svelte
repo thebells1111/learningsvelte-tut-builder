@@ -1,5 +1,8 @@
 <script>
   import ProjectName from './ProjectName.svelte';
+  import ChapterName from './ChapterName.svelte';
+  import SelectAppButton from './SelectAppButton.svelte';
+  import PreviewToggleButton from './PreviewToggleButton.svelte';
   import DownloadButton from './Download.svelte';
 
   import { onMount, getContext } from 'svelte';
@@ -11,14 +14,6 @@
   export let repl;
 
   let projectName = '01-random_quote_machine';
-  let chapterName = '01-intro';
-  let newchapterName = '';
-  export let showMarkdownPreview = false;
-
-  $: chapters =
-    projectName !== 'Create New Project'
-      ? Object.keys($directories[projectName]).sort()
-      : '';
 
   onMount(function mount() {
     if (repl && $mde) {
@@ -28,30 +23,19 @@
     }
   });
 
-  function enter() {
-    return function(node, callback) {
-      node.addEventListener('keydown', handleKeydown);
-
-      function handleKeydown(event) {
-        if (event.keyCode === 13) {
-          callback.call(this, event);
-        }
+  function selectNewApp() {
+    if (projectName !== 'Create New Project') {
+      let chapterName = Object.keys($directories[projectName]).sort()[0];
+      $currentApp = 'A';
+      $appA.components = $directories[projectName][chapterName].appA;
+      if ($directories[projectName][chapterName].appB) {
+        $appB = {};
+        $appB.components = $directories[projectName][chapterName].appB;
+      } else {
+        $appB = { ...$blankApp };
       }
-
-      return {
-        destroy() {
-          node.removeEventListener('keydown', handleKeydown);
-        },
-      };
-    };
-  }
-
-  function setApp() {
-    if (appB) {
-      $currentApp = $currentApp === 'A' ? 'B' : 'A';
-      let newApp = $currentApp === 'A' ? { ...appA } : { ...appB };
-      newApp.selectedComponent = repl.get_selected_component();
-      repl.set(newApp);
+      $mde.value($directories[projectName][chapterName].text.source);
+      repl.set($appA);
     }
   }
 
@@ -102,21 +86,6 @@
   //     reader.readAsText(file);
   //   });
   // }
-
-  function selectNewApp() {
-    if (projectName !== 'Create New Project') {
-      $currentApp = 'A';
-      $appA.components = $directories[projectName][chapterName].appA;
-      if ($directories[projectName][chapterName].appB) {
-        $appB = {};
-        $appB.components = $directories[projectName][chapterName].appB;
-      } else {
-        $appB = { ...$blankApp };
-      }
-      $mde.value($directories[projectName][chapterName].text.source);
-      repl.set($appA);
-    }
-  }
 </script>
 
 <div class="app-controls">
@@ -127,26 +96,10 @@
     on:change={handleFileUpload}
   /> -->
   <ProjectName {repl} />
-  {#if chapterName}
-    <select bind:value={chapterName} on:change={selectNewApp}>
-      {#each chapters as chapter}
-        <option value={chapter}>{chapter}</option>
-      {/each}
-      <option value="" />
-    </select>
-  {:else}
-    <input
-      bind:value={chapterName}
-      on:focus={e => e.target.select()}
-      use:enter={e => e.target.blur()}
-    />
-  {/if}
-
-  <button on:click={() => (showMarkdownPreview = !showMarkdownPreview)}>
-    {showMarkdownPreview ? 'Code' : 'chapter'}
-  </button>
-  <button on:click={setApp}>App-{$currentApp}</button>
-  <DownloadButton {appA} {appB} {chapterName} />
+  <ChapterName {repl} />
+  <PreviewToggleButton />
+  <SelectAppButton {repl} />
+  <DownloadButton />
 </div>
 
 <style>

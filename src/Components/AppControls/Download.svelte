@@ -1,8 +1,8 @@
 <script>
-  export let appA;
-  export let appB;
-  export let mde;
-  export let chapterName;
+  import { getContext } from 'svelte';
+
+  const { appA, appB, mde, chapterName } = getContext('Controls');
+
   function handleKeydown(event) {
     if (
       event.key === 's' &&
@@ -21,29 +21,29 @@
 
     let files = [];
 
-    let a = [...appA.components];
-    let b = appB ? [...appB.components] : [];
+    let a = [...$appA.components];
+    let b = $appB ? [...$appB.components] : [];
     files.push({
-      path: `${chapterName}/text.md`,
-      data: mde.value(),
+      path: `${$chapterName}/text.md`,
+      data: $mde.value(),
     });
     files.push(
       ...a.map(component => ({
-        path: `${chapterName}/app-a/${component.name}.${component.type}`,
+        path: `${$chapterName}/app-a/${component.name}.${component.type}`,
         data: component.source,
       }))
     );
 
     files.push(
       ...b.map(component => ({
-        path: `${chapterName}/app-b/${component.name}.${component.type}`,
+        path: `${$chapterName}/app-b/${component.name}.${component.type}`,
         data: component.source,
       }))
     );
 
     console.log(files);
 
-    //downloadBlob(doNotZip.toBlob(files), `${chapterName}.zip`);
+    //downloadBlob(doNotZip.toBlob(files), `${$chapterName}.zip`);
 
     downloading = false;
   }

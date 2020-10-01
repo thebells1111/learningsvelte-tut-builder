@@ -1,5 +1,5 @@
 <script>
-  import { setContext, createEventDispatcher } from 'svelte';
+  import { setContext, getContext, createEventDispatcher } from 'svelte';
   import { writable } from 'svelte/store';
   import SplitPane from './SplitPane.svelte';
   import ComponentSelector from './Input/ComponentSelector.svelte';
@@ -19,7 +19,8 @@
   export let injectedJS = '';
   export let injectedCSS = '';
   export let htmlContent = '';
-  export let showMarkdownPreview = false;
+
+  const { showMarkdownPreview } = getContext('Controls');
 
   const historyMap = new Map();
 
@@ -257,7 +258,7 @@
       />
       <div
         class="markdown-preview"
-        class:show-markdown-preview={showMarkdownPreview}
+        class:show-markdown-preview={$showMarkdownPreview}
       >
         {@html htmlContent}
       </div>

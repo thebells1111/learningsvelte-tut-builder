@@ -40,7 +40,6 @@
   import { readable, writable } from 'svelte/store';
   import { setContext } from 'svelte';
   let repl;
-  let showMarkdownPreview;
   let markdownContent = '';
   $: htmlContent = marked(markdownContent);
   const blankApp = readable({
@@ -59,9 +58,9 @@
   const mde = writable(null);
   const directories = writable(directoriesJSON);
   const currentApp = writable('A');
-  let projectName = '01-random_quote_machine';
-  let chapterName = '01-intro';
-  let newchapterName = '';
+  const showMarkdownPreview = writable(false);
+  const projectName = writable('01-random_quote_machine');
+  const chapterName = writable('01-intro');
 
   setContext('Controls', {
     appA,
@@ -70,10 +69,13 @@
     blankApp,
     directories,
     currentApp,
+    showMarkdownPreview,
+    projectName,
+    chapterName,
   });
 </script>
 
-<AppControls {repl} bind:showMarkdownPreview bind:htmlContent />
+<AppControls {repl} bind:htmlContent />
 
 <panel-container use:splitPane>
   <div id="editor">
@@ -81,12 +83,7 @@
   </div>
 
   <div id="repl">
-    <Repl
-      bind:this={repl}
-      workersUrl="workers"
-      {htmlContent}
-      {showMarkdownPreview}
-    />
+    <Repl bind:this={repl} workersUrl="workers" {htmlContent} />
   </div>
 </panel-container>
 
