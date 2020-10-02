@@ -7,7 +7,7 @@
   if (is_browser) {
     codemirror_promise = import('./codemirror.js');
 
-    codemirror_promise.then((mod) => {
+    codemirror_promise.then(mod => {
       _CodeMirror = mod.default;
     });
   }
@@ -18,7 +18,7 @@
   import Message from './Message.svelte';
 
   const dispatch = createEventDispatcher();
-  const { foldLines } = getContext('REPL')
+  const { foldLines } = getContext('REPL');
 
   export let readonly = false;
   export let errorLoc = null;
@@ -67,6 +67,9 @@
   export function getHistory() {
     return editor.getHistory();
   }
+  export function setCursor(pos) {
+    return editor.setCursor(pos);
+  }
 
   export function setHistory(history) {
     editor.setHistory(history);
@@ -81,7 +84,6 @@
       editor.foldCode(line - 1);
     }
   }
-
 
   export async function foldString(line) {
     if (editor) {
@@ -164,19 +166,19 @@
       } else {
         CodeMirror = _CodeMirror;
       }
-      if(!editor){
+      if (!editor) {
         await createEditor(mode || 'svelte');
       }
       if (editor) {
         editor.setValue(code || '');
-      $foldLines.forEach((line) => {
-        if (Number(line)) {
-          foldCode(line);
-        }
-        if (typeof line === 'string') {
-          foldString(line);
-        }
-		});
+        $foldLines.forEach(line => {
+          if (Number(line)) {
+            foldCode(line);
+          }
+          if (typeof line === 'string') {
+            foldString(line);
+          }
+        });
       }
     })();
 
@@ -210,10 +212,10 @@
         Enter: 'newlineAndIndentContinueMarkdownList',
         'Ctrl-/': 'toggleComment',
         'Cmd-/': 'toggleComment',
-        'Ctrl-Q': function (cm) {
+        'Ctrl-Q': function(cm) {
           cm.foldCode(cm.getCursor());
         },
-        'Cmd-Q': function (cm) {
+        'Cmd-Q': function(cm) {
           cm.foldCode(cm.getCursor());
         },
       },
@@ -235,7 +237,7 @@
 
     editor = CodeMirror.fromTextArea(refs.editor, opts);
 
-    editor.on('change', (instance) => {
+    editor.on('change', instance => {
       if (!updating_externally) {
         const value = instance.getValue();
         dispatch('change', { value });
@@ -249,9 +251,27 @@
   }
 
   function sleep(ms) {
-    return new Promise((fulfil) => setTimeout(fulfil, ms));
+    return new Promise(fulfil => setTimeout(fulfil, ms));
   }
 </script>
+
+<div
+  class="codemirror-container"
+  class:flex
+  bind:offsetWidth={w}
+  bind:offsetHeight={h}
+>
+  <!-- svelte-ignore a11y-positive-tabindex -->
+  <textarea tabindex="2" bind:this={refs.editor} readonly value={code} />
+
+  {#if !CodeMirror}
+    <pre style="position: absolute; left: 0; top: 0;">loading code...</pre>
+
+    <div style="position: absolute; width: 100%; bottom: 0;">
+      <Message kind="info">loading editor...</Message>
+    </div>
+  {/if}
+</div>
 
 <style>
   .codemirror-container {
@@ -320,21 +340,3 @@
     height: auto;
   }
 </style>
-
-<div
-  class="codemirror-container"
-  class:flex
-  bind:offsetWidth={w}
-  bind:offsetHeight={h}
->
-  <!-- svelte-ignore a11y-positive-tabindex -->
-  <textarea tabindex="2" bind:this={refs.editor} readonly value={code} />
-
-  {#if !CodeMirror}
-    <pre style="position: absolute; left: 0; top: 0;">loading code...</pre>
-
-    <div style="position: absolute; width: 100%; bottom: 0;">
-      <Message kind="info">loading editor...</Message>
-    </div>
-  {/if}
-</div>

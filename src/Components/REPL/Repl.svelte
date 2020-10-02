@@ -154,6 +154,14 @@
       );
       handle_select(component);
 
+      setTimeout(() => {
+        module_editor.focus();
+        module_editor.setCursor({
+          line: item.start.line - 1,
+          ch: item.start.column,
+        });
+      }, 0);
+
       // TODO select the line/column in question
     },
 

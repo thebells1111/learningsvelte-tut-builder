@@ -118,7 +118,7 @@
     flex: 0;
   }
 
-  button {
+  /* button {
     position: relative;
     top: -0.1rem;
     display: inline-block;
@@ -127,9 +127,7 @@
     transition: opacity 0.3s;
     font-family: var(--font);
     font-size: 1rem;
-    color: black;
-    /* width: 1.6em;
-		height: 1.6em; */
+    color: black;   
     line-height: 1;
     margin: 0 0 0 0.2em;
   }
@@ -152,5 +150,5 @@
 
   input:focus {
     opacity: 1;
-  }
+  } */
 </style>
