@@ -1,6 +1,7 @@
 <script>
   import AppControls from './Components/AppControls/';
   import MarkdownEditor from './Components/MarkdownEditor.svelte';
+  import Directory from './Components/Directory';
   import Repl from './components/Repl/Repl.svelte';
   import directoriesJSON from './directories.json';
   import marked from 'marked';
@@ -63,6 +64,7 @@
   const chapterName = writable('01-intro');
   const projects = writable(directoriesJSON.projectNames);
   const chapters = writable(directoriesJSON[$projectName].chapterNames);
+  const folders = writable([]);
 
   setContext('Controls', {
     appA,
@@ -76,13 +78,14 @@
     chapterName,
     projects,
     chapters,
+    folders,
   });
 </script>
 
 <AppControls {repl} bind:htmlContent />
-
 <panel-container use:splitPane>
   <div id="editor">
+    <Directory />
     <MarkdownEditor bind:markdownContent />
   </div>
 
