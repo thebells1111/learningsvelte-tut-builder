@@ -40,11 +40,10 @@
             folders: [],
           };
 
-          let x = filesToTreeNodes([
-            { webkitRelativePath: directories.join('/'), source: file.source },
-          ]);
-
-          folder[project][chapter][app].folders = x;
+          folder[project][chapter][app].folders.push({
+            webkitRelativePath: directories.join('/'),
+            source: file.source,
+          });
         } else {
           folder[project][chapter].text = file.source; //change this to actual text.md
         }

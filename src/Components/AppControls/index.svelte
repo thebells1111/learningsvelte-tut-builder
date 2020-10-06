@@ -49,7 +49,7 @@
 </script>
 
 <div class="app-controls">
-  <!-- <UploadProjects /> -->
+  <UploadProjects />
   <ProjectName {repl} />
   <ChapterName {repl} />
   <PreviewToggleButton />
