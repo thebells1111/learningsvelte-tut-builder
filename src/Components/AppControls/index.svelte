@@ -38,7 +38,6 @@
       $chapters = $directories[$projectName].chapterNames;
       $chapterName = $chapters[0];
       $currentApp = 'A';
-      $appA.components = $directories[$projectName][$chapterName]['app-a'];
       if ($directories[$projectName][$chapterName]['app-b']) {
         $appB = {};
         $appB.components = $directories[$projectName][$chapterName]['app-b'];
@@ -46,12 +45,41 @@
         $appB = { ...$blankApp };
       }
       $mde.value($directories[$projectName][$chapterName].text);
-      //repl.set($appA);
     }
 
     $folders = filesToTreeNodes(
       $directories[$projectName][$chapterName]['app-a'].folders
     );
+
+    $appA.components = convertToComponent($folders);
+    repl.set($appA);
+  }
+
+  function convertToComponent(file) {
+    let initialPath = '';
+    let components = [];
+
+    function c(x, path) {
+      x.forEach(f => {
+        if (f.type === 'folder') {
+          initialPath += `${f.name}/`;
+          c(f.files, initialPath);
+          initialPath = path ? `${path}` : '';
+        } else {
+          if (f.name === 'index') {
+            initialPath = initialPath.slice(0, -1);
+            f.name = '';
+          }
+          components.push({
+            name: `${initialPath}${f.name}`,
+            type: f.type,
+            source: f.source,
+          });
+        }
+      });
+    }
+    c(file);
+    return components;
   }
 
   function filesToTreeNodes(arr) {
