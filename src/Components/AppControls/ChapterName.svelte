@@ -40,15 +40,15 @@
   function selectNewApp() {
     if ($projectName !== 'Create New Project') {
       $currentApp = 'A';
-      $appA.components = $directories[$projectName][$chapterName].appA;
-      if ($directories[$projectName][$chapterName].appB) {
+      $appA.components = $directories[$projectName][$chapterName]['app-a'];
+      if ($directories[$projectName][$chapterName]['app-b']) {
         $appB = {};
-        $appB.components = $directories[$projectName][$chapterName].appB;
+        $appB.components = $directories[$projectName][$chapterName]['app-b'];
       } else {
         $appB = { ...$blankApp };
       }
-      $mde.value($directories[$projectName][$chapterName].text.source);
-      repl.set($appA);
+      $mde.value($directories[$projectName][$chapterName].text);
+      //repl.set($appA);
     }
   }
 </script>

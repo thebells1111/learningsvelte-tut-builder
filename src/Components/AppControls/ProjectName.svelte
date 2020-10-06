@@ -1,20 +1,31 @@
 <script>
   import { getContext } from 'svelte';
-  export let projectName;
   export let repl;
 
-  const { blankApp, appA, appB, mde, directories, currentApp } = getContext(
-    'Controls'
-  );
-  let projects = Object.keys($directories).sort();
+  const {
+    blankApp,
+    appA,
+    appB,
+    mde,
+    directories,
+    currentApp,
+    projectName,
+    projects,
+    chapterName,
+    chapters,
+  } = getContext('Controls');
   let newProjectName;
 
   function createNewProject(e) {
     $directories[newProjectName] = {};
     $directories[newProjectName].meta = '';
     $directories[newProjectName]['01-intro'] = {};
-    $directories[newProjectName]['01-intro'].appA = [...$blankApp.components];
-    $directories[newProjectName]['01-intro'].appB = [...$blankApp.components];
+    $directories[newProjectName]['01-intro']['app-a'] = [
+      ...$blankApp.components,
+    ];
+    $directories[newProjectName]['01-intro']['app-b'] = [
+      ...$blankApp.components,
+    ];
 
     $directories[newProjectName]['01-intro'].text = {
       name: 'text',
@@ -22,14 +33,14 @@
       source: '',
     };
 
-    projectName = newProjectName;
-    let chapterName = '01-intro';
-    projects = Object.keys($directories).sort();
+    $projectName = newProjectName;
+    $chapterName = '01-intro';
+    $projects = $projects.push($projectName);
     selectNewApp();
   }
 
   function enterNewProject(e) {
-    let projectNumbers = projects.map(v => {
+    let projectNumbers = $projects.map(v => {
       return parseInt(v);
     });
     let nextProjectNumber = projectNumbers[projectNumbers.length - 1] + 1;
@@ -62,25 +73,29 @@
   }
 
   function selectNewApp() {
-    if (projectName !== 'Create New Project') {
-      let chapterName = Object.keys($directories[projectName]).sort()[0];
+    if ($projectName !== 'Create New Project') {
+      $chapters = $directories[$projectName].chapterNames;
+      $chapterName = $chapters[0];
       $currentApp = 'A';
-      $appA.components = $directories[projectName][chapterName].appA;
-      if ($directories[projectName][chapterName].appB) {
+      $appA.components = $directories[$projectName][$chapterName]['app-a'];
+      console.log(
+        JSON.stringify($directories[$projectName][$chapterName]['app-a'])
+      );
+      if ($directories[$projectName][$chapterName]['app-b']) {
         $appB = {};
-        $appB.components = $directories[projectName][chapterName].appB;
+        $appB.components = $directories[$projectName][$chapterName]['app-b'];
       } else {
         $appB = { ...$blankApp };
       }
-      $mde.value($directories[projectName][chapterName].text.source);
-      repl.set($appA);
+      $mde.value($directories[$projectName][$chapterName].text);
+      //repl.set($appA);
     }
   }
 </script>
 
-{#if projectName !== 'Create New Project'}
-  <select bind:value={projectName} on:change={selectNewApp}>
-    {#each projects as project}
+{#if $projectName !== 'Create New Project'}
+  <select bind:value={$projectName} on:change={selectNewApp}>
+    {#each $projects as project}
       <option value={project}>{project}</option>
     {/each}
     <option value="Create New Project">Create New Project</option>

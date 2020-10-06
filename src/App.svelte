@@ -61,6 +61,8 @@
   const showMarkdownPreview = writable(false);
   const projectName = writable('01-random_quote_machine');
   const chapterName = writable('01-intro');
+  const projects = writable(directoriesJSON.projectNames);
+  const chapters = writable(directoriesJSON[$projectName].chapterNames);
 
   setContext('Controls', {
     appA,
@@ -72,6 +74,8 @@
     showMarkdownPreview,
     projectName,
     chapterName,
+    projects,
+    chapters,
   });
 </script>
 

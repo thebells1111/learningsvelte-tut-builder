@@ -4,16 +4,23 @@
   import SelectAppButton from './SelectAppButton.svelte';
   import PreviewToggleButton from './PreviewToggleButton.svelte';
   import DownloadButton from './Download.svelte';
+  import UploadProjects from './UploadProjects.svelte';
 
   import { onMount, getContext } from 'svelte';
-  const { blankApp, appA, appB, directories, currentApp, mde } = getContext(
-    'Controls'
-  );
+  const {
+    blankApp,
+    appA,
+    appB,
+    directories,
+    currentApp,
+    mde,
+    chapterName,
+    projectName,
+    chapters,
+  } = getContext('Controls');
   import * as doNotZip from 'do-not-zip';
 
   export let repl;
-
-  let projectName = '01-random_quote_machine';
 
   onMount(function mount() {
     if (repl && $mde) {
@@ -24,77 +31,25 @@
   });
 
   function selectNewApp() {
-    if (projectName !== 'Create New Project') {
-      let chapterName = Object.keys($directories[projectName]).sort()[0];
+    if ($projectName !== 'Create New Project') {
+      $chapters = $directories[$projectName].chapterNames;
+      $chapterName = $chapters[0];
       $currentApp = 'A';
-      $appA.components = $directories[projectName][chapterName].appA;
-      if ($directories[projectName][chapterName].appB) {
+      $appA.components = $directories[$projectName][$chapterName]['app-a'];
+      if ($directories[$projectName][$chapterName]['app-b']) {
         $appB = {};
-        $appB.components = $directories[projectName][chapterName].appB;
+        $appB.components = $directories[$projectName][$chapterName]['app-b'];
       } else {
         $appB = { ...$blankApp };
       }
-      $mde.value($directories[projectName][chapterName].text.source);
+      $mde.value($directories[$projectName][$chapterName].text);
       repl.set($appA);
     }
   }
-
-  // async function handleFileUpload(e) {
-  //   let newAppA = [];
-  //   let newAppB = [];
-  //   for (let file of e.target.files) {
-  //     let relativePath = file.webkitRelativePath;
-  //     let $directories = relativePath.split('/');
-  //     let directoryLevelOne = $directories[$directories.length - 2];
-
-  //     if (file.name === 'text.md') {
-  //       chapterName = directoryLevelOne;
-  //       $mde.value(await readFileAsync(file));
-  //     } else {
-  //       let appFile = file.name.split('.');
-  //       let source = await readFileAsync(file);
-  //       if (directoryLevelOne == 'app-a') {
-  //         newAppA.push({
-  //           name: appFile[0],
-  //           type: appFile[1],
-  //           source: source,
-  //         });
-  //       } else if (directoryLevelOne == 'app-b') {
-  //         newAppB.push({
-  //           name: appFile[0],
-  //           type: appFile[1],
-  //           source: source,
-  //         });
-  //       }
-  //     }
-  //   }
-  //   appA = { components: newAppA };
-  //   appB = { components: newAppB };
-  //   repl.set($currentApp === 'A' ? appA : appB);
-  // }
-
-  // function readFileAsync(file) {
-  //   return new Promise((resolve, reject) => {
-  //     let reader = new FileReader();
-
-  //     reader.onload = () => {
-  //       resolve(reader.result);
-  //     };
-
-  //     reader.onerror = reject;
-
-  //     reader.readAsText(file);
-  //   });
-  // }
 </script>
 
 <div class="app-controls">
-  <!-- <input
-    type="file"
-    webkitdirectory
-    mozdirectory
-    on:change={handleFileUpload}
-  /> -->
+  <!-- <UploadProjects /> -->
   <ProjectName {repl} />
   <ChapterName {repl} />
   <PreviewToggleButton />
