@@ -1,6 +1,6 @@
 <script>
   import { setContext, getContext, createEventDispatcher } from 'svelte';
-  import { writable } from 'svelte/store';
+  import { writable, derived } from 'svelte/store';
   import SplitPane from './SplitPane.svelte';
   import ComponentSelector from './Input/ComponentSelector.svelte';
   import ModuleEditor from './Input/ModuleEditor.svelte';
@@ -20,7 +20,7 @@
   export let injectedCSS = '';
   export let htmlContent = '';
 
-  const { showMarkdownPreview } = getContext('Controls');
+  const { showMarkdownPreview, folders } = getContext('Controls');
 
   const historyMap = new Map();
 
@@ -106,6 +106,7 @@
   const selected = writable(null);
   const bundle = writable(null);
   const foldLines = writable(null);
+  $: $components = $folders;
 
   const compile_options = writable({
     generate: 'dom',
@@ -203,7 +204,8 @@
     },
   });
 
-  function handle_select(component) {
+  export function handle_select(component) {
+    console.log(component);
     historyMap.set(get_component_name($selected), module_editor.getHistory());
     selected.set(component);
     module_editor.set(component.source, component.type);

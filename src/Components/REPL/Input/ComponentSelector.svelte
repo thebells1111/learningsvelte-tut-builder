@@ -1,5 +1,6 @@
 <script>
   import { getContext } from 'svelte';
+  import Directory from './Directory/Directory.svelte';
 
   export let handle_select;
 
@@ -8,6 +9,7 @@
   let editing = null;
 
   function selectComponent(component) {
+    console.log($selected);
     if ($selected !== component) {
       editing = null;
       handle_select(component);
@@ -143,6 +145,7 @@
   }
 </script>
 
+<Directory {selectComponent} />
 <div class="component-selector">
   {#if $components.length}
     <div class="file-tabs" on:dblclick={addNew}>

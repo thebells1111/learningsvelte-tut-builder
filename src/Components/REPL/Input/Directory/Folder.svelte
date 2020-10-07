@@ -4,6 +4,7 @@
   export let expanded = false;
   export let name;
   export let children;
+  export let selectComponent;
 
   function toggle() {
     expanded = !expanded;
@@ -14,16 +15,16 @@
 
 {#if expanded}
   <ul>
-    {#each children as file}
+    {#each children as component}
       <li>
-        {#if file.type === 'directory'}
+        {#if component.type === 'directory'}
           <svelte:self
-            name={file.name}
-            children={file.children}
+            name={component.name}
+            children={component.children}
             expanded={false}
           />
         {:else}
-          <File name={file.name} type={file.type} source={file.source} />
+          <File {component} {selectComponent} />
         {/if}
       </li>
     {/each}
