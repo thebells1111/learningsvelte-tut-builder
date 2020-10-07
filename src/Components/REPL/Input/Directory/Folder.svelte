@@ -1,6 +1,8 @@
 <script>
   import File from './File.svelte';
-
+  import { getContext } from 'svelte';
+  const { folders } = getContext('Controls');
+  const { components } = getContext('REPL');
   export let expanded = false;
   export let name;
   export let children;
@@ -9,9 +11,60 @@
   function toggle() {
     expanded = !expanded;
   }
+
+  function addFolder() {
+    console.log(children);
+    let newFolder = {};
+    newFolder.name = 'folder';
+    newFolder.type = 'directory';
+    newFolder.children = [];
+    children.unshift(newFolder);
+  }
+
+  function addFile() {
+    let newFile = {};
+    newFile.name = 'file';
+    newFile.type = 'svelte';
+    newFile.source = '';
+    newFile.children = [];
+    children.unshift(newFile);
+    console.log($folders);
+    $components = convertToComponent($folders);
+  }
+
+  function convertToComponent(file) {
+    let initialPath = '';
+    let components = [];
+
+    function c(x, path) {
+      x.forEach(f => {
+        if (f.type === 'folder') {
+          initialPath += `${f.name}/`;
+          c(f.files, initialPath);
+          initialPath = path ? `${path}` : '';
+        } else {
+          if (f.name === 'index') {
+            initialPath = initialPath.slice(0, -1);
+            f.name = '';
+          }
+          components.push({
+            name: `${initialPath}${f.name}`,
+            type: f.type,
+            source: f.source,
+          });
+        }
+      });
+    }
+    c(file);
+    return components;
+  }
 </script>
 
-<div class:expanded on:click={toggle}>{name}</div>
+<div class:expanded on:click={toggle}>
+  {name}
+  <button on:click={addFolder}>f</button>
+  <button on:click={addFile}>+</button>
+</div>
 
 {#if expanded}
   <ul>
@@ -34,7 +87,7 @@
 <style>
   div {
     padding: 0 0 0 1.5em;
-    /* background: url(tutorial/icons/folder.svg) 0 0.1em no-repeat; */
+    background: url(/icons/folder-src.svg) 0 0.1em no-repeat;
     background-size: 1em 1em;
     font-weight: bold;
     cursor: pointer;
@@ -46,7 +99,7 @@
   }
 
   .expanded {
-    /* background-image: url(tutorial/icons/folder-open.svg); */
+    background-image: url(/icons/folder-src-open.svg);
   }
 
   ul {

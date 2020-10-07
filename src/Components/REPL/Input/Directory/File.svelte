@@ -8,7 +8,7 @@
 </script>
 
 <div
-  style="background-image: url(tutorial/icons/{component.type}.svg)"
+  style="background-image: url(icons/{component.type}.svg)"
   on:click={handleClick}
 >
   {component.name}.{component.type}

@@ -1,8 +1,9 @@
 <script>
   import { setContext, getContext, createEventDispatcher } from 'svelte';
-  import { writable, derived } from 'svelte/store';
+  import { writable } from 'svelte/store';
   import SplitPane from './SplitPane.svelte';
   import ComponentSelector from './Input/ComponentSelector.svelte';
+  import Directory from './Input/Directory/Directory.svelte';
   import ModuleEditor from './Input/ModuleEditor.svelte';
   import Output from './Output/index.svelte';
   import Bundler from './Bundler.js';
@@ -249,11 +250,22 @@
     {fixed}
   >
     <section slot="a">
-      <ComponentSelector {handle_select} />
-      <ModuleEditor
-        bind:this={input}
-        errorLoc={sourceErrorLoc || runtimeErrorLoc}
-      />
+      <SplitPane type={'horizontal'} pos={30}>
+        <section slot="a">
+          <Directory {handle_select} />
+        </section>
+        <section slot="b">
+          <ComponentSelector {handle_select} />
+          <ModuleEditor
+            bind:this={input}
+            errorLoc={sourceErrorLoc || runtimeErrorLoc}
+          />
+        </section>
+        <ModuleEditor
+          bind:this={input}
+          errorLoc={sourceErrorLoc || runtimeErrorLoc}
+        />
+      </SplitPane>
     </section>
 
     <section slot="b" style="height: 100%;">

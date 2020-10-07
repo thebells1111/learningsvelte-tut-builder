@@ -1,6 +1,5 @@
 <script>
   import { getContext } from 'svelte';
-  import Directory from './Directory/Directory.svelte';
 
   export let handle_select;
 
@@ -145,7 +144,6 @@
   }
 </script>
 
-<Directory {selectComponent} />
 <div class="component-selector">
   {#if $components.length}
     <div class="file-tabs" on:dblclick={addNew}>
@@ -172,8 +170,6 @@
             <span class="input-sizer">
               {editing.name + (/\./.test(editing.name) ? '' : `.${editing.type}`)}
             </span>
-
-            <!-- svelte-ignore a11y-autofocus -->
             <input
               use:focus
               spellcheck={false}
