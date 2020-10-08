@@ -12,7 +12,7 @@
 
   function toggle() {
     expanded = !expanded;
-    $currentPath = path || App;
+    $currentPath = path;
   }
 </script>
 

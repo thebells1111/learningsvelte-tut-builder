@@ -159,9 +159,24 @@
     let newFolder = {};
     newFolder.name = 'folder';
     newFolder.type = 'directory';
+    newFolder.path = $currentPath
+      ? $currentPath + '/' + newFolder.name
+      : newFolder.name;
     newFolder.children = [];
-    console.log($folders);
     //children.unshift(newFolder);
+    let currentFolder = $folders;
+    let splitPath = $currentPath && $currentPath.split('/');
+
+    while (splitPath.length > 0) {
+      let searchName = splitPath.shift();
+      currentFolder = currentFolder.children
+        ? currentFolder.children.find(({ name }) => name === searchName)
+        : currentFolder.find(({ name }) => name === searchName);
+    }
+    currentFolder.children
+      ? currentFolder.children.push(newFolder)
+      : $folders.push(newFolder);
+    $folders = $folders;
   }
 
   function addFile() {
