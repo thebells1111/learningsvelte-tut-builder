@@ -38,7 +38,7 @@
     // re-select, in case the type changed
     handle_select($selected);
 
-    components = components; // TODO necessary?
+    components.update(components => components);
 
     // focus the editor, but wait a beat (so key events aren't misdirected)
     setTimeout(request_focus);

@@ -94,7 +94,7 @@
     $mde = true; //delete this
     if (repl && $mde) {
       //initializeApp();
-      $folders = componentsToFolder($appA);
+      $folders = componentsToFolder($appA.components);
       repl.set($appA);
     } else {
       setTimeout(mount, 1);

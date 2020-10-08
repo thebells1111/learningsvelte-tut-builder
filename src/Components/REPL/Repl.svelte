@@ -108,6 +108,7 @@
   const selected = writable(null);
   const bundle = writable(null);
   const foldLines = writable(null);
+  $: $folders = $components && componentsToFolder($components);
 
   const compile_options = writable({
     generate: 'dom',

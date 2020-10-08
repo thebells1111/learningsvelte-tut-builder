@@ -1,6 +1,4 @@
-export default function componentsToFolder(app) {
-  console.log(app);
-  let arr = app.components;
+export default function componentsToFolder(arr) {
   var tree = {};
   function addnode(obj) {
     obj.webkitRelativePath = obj.name + '.' + obj.type;
