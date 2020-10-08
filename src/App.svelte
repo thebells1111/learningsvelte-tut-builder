@@ -64,6 +64,7 @@
   const projects = writable(directoriesJSON.projectNames);
   const chapters = writable(directoriesJSON[$projectName].chapterNames);
   const folders = writable([]);
+  const currentPath = writable('');
 
   setContext('Controls', {
     appA,
@@ -78,6 +79,7 @@
     projects,
     chapters,
     folders,
+    currentPath,
   });
 </script>
 

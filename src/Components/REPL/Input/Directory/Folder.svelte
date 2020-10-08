@@ -1,11 +1,12 @@
 <script>
   import File from './File.svelte';
   import { getContext } from 'svelte';
-  const { folders } = getContext('Controls');
+  const { folders, currentPath } = getContext('Controls');
   const { components } = getContext('REPL');
   export let expanded = true;
   export let name;
   export let children;
+  export let path;
   export let isFirst = false;
   export let selectComponent;
   let folderBase = 'svelte';
@@ -19,61 +20,12 @@
 
   function toggle() {
     expanded = !expanded;
-  }
-
-  function addFolder() {
-    console.log(children);
-    let newFolder = {};
-    newFolder.name = 'folder';
-    newFolder.type = 'directory';
-    newFolder.children = [];
-    children.unshift(newFolder);
-  }
-
-  function addFile() {
-    let newFile = {};
-    newFile.name = 'file';
-    newFile.type = 'svelte';
-    newFile.source = '';
-    newFile.children = [];
-    children.unshift(newFile);
-    console.log($folders);
-    $components = convertToComponent($folders);
-  }
-
-  function convertToComponent(file) {
-    let initialPath = '';
-    let components = [];
-
-    function c(x, path) {
-      x.forEach(f => {
-        if (f.type === 'folder') {
-          initialPath += `${f.name}/`;
-          c(f.files, initialPath);
-          initialPath = path ? `${path}` : '';
-        } else {
-          if (f.name === 'index') {
-            initialPath = initialPath.slice(0, -1);
-            f.name = '';
-          }
-          components.push({
-            name: `${initialPath}${f.name}`,
-            type: f.type,
-            source: f.source,
-          });
-        }
-      });
-    }
-    c(file);
-    return components;
+    $currentPath = path;
+    console.log($currentPath);
   }
 </script>
 
-<div class:expanded on:click={toggle} style="--folder: {folder}">
-  {name}
-  <button on:click={addFolder}>f</button>
-  <button on:click={addFile}>+</button>
-</div>
+<div class:expanded on:click={toggle} style="--folder: {folder}">{name}</div>
 
 {#if expanded}
   <ul>
@@ -83,6 +35,7 @@
           <svelte:self
             name={component.name}
             children={component.children}
+            path={component.path}
             expanded={false}
           />
         {:else}

@@ -1,7 +1,7 @@
 <script>
   import Folder from './Folder.svelte';
   import { getContext } from 'svelte';
-  const { folders } = getContext('Controls');
+  const { folders, currentPath } = getContext('Controls');
 
   export let handle_select;
 
@@ -144,9 +144,64 @@
   function focus(node) {
     node.select();
   }
+
+  function addFolder() {
+    console.log($folders);
+    let newFolder = {};
+    newFolder.name = 'folder';
+    newFolder.type = 'directory';
+    newFolder.path = $currentPath
+      ? $currentPath + '/' + newFolder.name
+      : newFolder.name;
+    newFolder.children = [];
+    $folders.unshift(newFolder);
+    const result = $folders.find(({ name }) => name === newFolder.name);
+    console.log(result);
+    $folders = $folders;
+  }
+
+  function addFile() {
+    let newFile = {};
+    newFile.name = 'file';
+    newFile.type = 'svelte';
+    newFile.source = '';
+    newFile.children = [];
+    children.unshift(newFile);
+    console.log($folders);
+    $components = convertToComponent($folders);
+  }
+
+  function convertToComponent(file) {
+    let initialPath = '';
+    let components = [];
+
+    function c(x, path) {
+      x.forEach(f => {
+        if (f.type === 'folder') {
+          initialPath += `${f.name}/`;
+          c(f.files, initialPath);
+          initialPath = path ? `${path}` : '';
+        } else {
+          if (f.name === 'index') {
+            initialPath = initialPath.slice(0, -1);
+            f.name = '';
+          }
+          components.push({
+            name: `${initialPath}${f.name}`,
+            type: f.type,
+            source: f.source,
+          });
+        }
+      });
+    }
+    c(file);
+    return components;
+  }
 </script>
 
 <div>
+  <button class="add-folder" on:click={addFolder} />
+  <button class="add-file" on:click={addFile} />
   <Folder
     name="src"
     isFirst={true}
@@ -160,5 +215,19 @@
   div {
     position: relative !important;
     height: auto !important;
+  }
+
+  button {
+    background: 0 0.1em no-repeat;
+    width: 24px;
+    height: 24px;
+  }
+
+  .add-folder {
+    background-image: url(/icons/new-folder.svg);
+  }
+
+  .add-file {
+    background-image: url(/icons/new-file.svg);
   }
 </style>
