@@ -8,16 +8,16 @@ export default function componentsToFolder(arr) {
       let node = {
         name: splitpath[i],
         type: 'directory',
-        path: obj.webkitRelativePath
-          .split('.')
-          .slice(0, -1)
-          .join('.'),
+        path: splitpath.slice(0, i + 1).join('/'),
       };
       if (i == splitpath.length - 1) {
-        let splitName = splitpath[i].split('.');
+        let splitTemp = [...splitpath];
+        let splitName = splitTemp.pop().split('.');
         node.type = splitName.pop();
         node.name = splitName.join('.');
         node.source = obj.source;
+        node.webkitRelativePath = obj.webkitRelativePath;
+        //node.path = splitTemp.join('/');
       }
       ptr[splitpath[i]] = ptr[splitpath[i]] || node;
       ptr[splitpath[i]].children = ptr[splitpath[i]].children || {};

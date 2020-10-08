@@ -52,12 +52,14 @@
       {
         name: 'App',
         type: 'svelte',
-        source: '',
+        source:
+          `<script>import Display from './components/Display/Display.svelte'</` +
+          `script> <Display />`,
       },
       {
         name: 'components/Display/Display',
         type: 'svelte',
-        source: '',
+        source: 'Hello',
       },
     ],
     selectedComponent: 'App.svelte',

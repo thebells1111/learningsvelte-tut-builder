@@ -1,6 +1,7 @@
 <script>
   export let component;
-  export let selectComponent;
+  import { getContext } from 'svelte';
+  const { currentPath, selectComponent } = getContext('Directory');
 
   function handleClick() {
     selectComponent(component);

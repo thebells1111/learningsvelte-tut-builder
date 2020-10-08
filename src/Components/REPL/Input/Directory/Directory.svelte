@@ -1,21 +1,28 @@
 <script>
   import Folder from './Folder.svelte';
-  import { getContext } from 'svelte';
-  const { folders } = getContext('Controls');
+  import { getContext, setContext } from 'svelte';
+  import { writable } from 'svelte/store';
 
   export let handle_select;
 
   const { components, selected, request_focus, rebundle } = getContext('REPL');
+  const { folders } = getContext('Controls');
 
-  let editing = null;
+  const currentPath = writable('App');
 
   function selectComponent(component) {
-    console.log($selected);
     if ($selected !== component) {
       editing = null;
       handle_select(component);
     }
   }
+
+  setContext('Directory', {
+    currentPath,
+    selectComponent,
+  });
+
+  let editing = null;
 
   function editTab(component) {
     if ($selected === component) {
@@ -146,12 +153,13 @@
   }
 
   function addFolder() {
-    console.log(children);
+    //console.log(children);
     let newFolder = {};
     newFolder.name = 'folder';
     newFolder.type = 'directory';
     newFolder.children = [];
-    children.unshift(newFolder);
+    console.log($folders);
+    //children.unshift(newFolder);
   }
 
   function addFile() {
@@ -160,9 +168,9 @@
     newFile.type = 'svelte';
     newFile.source = '';
     newFile.children = [];
-    children.unshift(newFile);
-    console.log($folders);
-    $components = convertToComponent($folders);
+    //children.unshift(newFile);
+
+    //$components = convertToComponent($folders);
   }
 
   function convertToComponent(file) {

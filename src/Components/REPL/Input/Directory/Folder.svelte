@@ -3,13 +3,17 @@
   import { getContext } from 'svelte';
   const { folders } = getContext('Controls');
   const { components } = getContext('REPL');
+  const { currentPath } = getContext('Directory');
   export let expanded = false;
   export let name;
   export let children;
+  export let path = 'App';
   export let selectComponent;
 
   function toggle() {
     expanded = !expanded;
+    $currentPath = path || App;
+    console.log($currentPath);
   }
 </script>
 
@@ -23,6 +27,7 @@
           <svelte:self
             name={component.name}
             children={component.children}
+            path={component.path}
             expanded={false}
           />
         {:else}
