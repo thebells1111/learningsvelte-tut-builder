@@ -171,14 +171,15 @@
       }
       if (editor) {
         editor.setValue(code || '');
-        $foldLines.forEach(line => {
-          if (Number(line)) {
-            foldCode(line);
-          }
-          if (typeof line === 'string') {
-            foldString(line);
-          }
-        });
+        $foldLines &&
+          $foldLines.forEach(line => {
+            if (Number(line)) {
+              foldCode(line);
+            }
+            if (typeof line === 'string') {
+              foldString(line);
+            }
+          });
       }
     })();
 

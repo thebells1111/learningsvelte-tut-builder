@@ -3,6 +3,9 @@
   import MarkdownEditor from './Components/MarkdownEditor.svelte';
   import Repl from './components/Repl/Repl.svelte';
   import directoriesJSON from './directories.json';
+  import folderToComponents from '../utils/folderToComponents';
+  import filesToTreeNodes from '../utils/filesToTreeNodes';
+
   import marked from 'marked';
 
   marked.setOptions({
@@ -14,7 +17,8 @@
   function splitPane() {
     function split() {
       splitInstance = Split(['#editor', '#repl'], {
-        sizes: [100 / 3, 200 / 3],
+        // sizes: [100 / 3, 200 / 3],
+        sizes: [0, 100],
         direction: 'horizontal',
         elementStyle: (dimension, size, gutterSize) => ({
           'flex-basis': `calc(${size}% - ${gutterSize}px)`,
@@ -38,7 +42,8 @@
   }
 
   import { readable, writable } from 'svelte/store';
-  import { setContext } from 'svelte';
+  import { setContext, onMount } from 'svelte';
+  import componentsToFolder from '../utils/componentsToFolder';
   let repl;
   let markdownContent = '';
   $: htmlContent = marked(markdownContent);
@@ -46,6 +51,11 @@
     components: [
       {
         name: 'App',
+        type: 'svelte',
+        source: '',
+      },
+      {
+        name: 'components/Display/Display',
         type: 'svelte',
         source: '',
       },
@@ -79,12 +89,36 @@
     chapters,
     folders,
   });
+
+  onMount(function mount() {
+    $mde = true; //delete this
+    if (repl && $mde) {
+      //initializeApp();
+      $folders = componentsToFolder($appA);
+      repl.set($appA);
+    } else {
+      setTimeout(mount, 1);
+    }
+  });
+
+  function initializeApp() {
+    //$mde.value($directories[$projectName][$chapterName].text);
+
+    $folders = filesToTreeNodes(
+      $directories[$projectName][$chapterName]['app-a'].folders
+    );
+
+    console.log($folders);
+
+    $appA.components = folderToComponents($folders);
+    repl.set($appA);
+  }
 </script>
 
-<AppControls {repl} bind:htmlContent />
+<!-- <AppControls {repl} bind:htmlContent /> -->
 <panel-container use:splitPane>
   <div id="editor">
-    <MarkdownEditor bind:markdownContent />
+    <!-- <MarkdownEditor bind:markdownContent /> -->
   </div>
 
   <div id="repl">

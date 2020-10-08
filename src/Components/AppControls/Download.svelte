@@ -1,5 +1,6 @@
 <script>
   import { getContext } from 'svelte';
+  import * as doNotZip from 'do-not-zip';
 
   const { appA, appB, mde, chapterName } = getContext('Controls');
 
