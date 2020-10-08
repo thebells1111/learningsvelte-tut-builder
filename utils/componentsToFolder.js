@@ -17,7 +17,7 @@ export default function componentsToFolder(arr) {
         node.name = splitName.join('.');
         node.source = obj.source;
         node.webkitRelativePath = obj.webkitRelativePath;
-        //node.path = splitTemp.join('/');
+        node.path = splitTemp.join('/');
       }
       ptr[splitpath[i]] = ptr[splitpath[i]] || node;
       ptr[splitpath[i]].children = ptr[splitpath[i]].children || {};

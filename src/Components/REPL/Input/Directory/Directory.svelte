@@ -3,12 +3,14 @@
   import { getContext, setContext } from 'svelte';
   import { writable } from 'svelte/store';
 
+  import componentsToFolder from '../../../../../utils/componentsToFolder';
+
   export let handle_select;
 
   const { components, selected, request_focus, rebundle } = getContext('REPL');
   const { folders } = getContext('Controls');
 
-  const currentPath = writable('App');
+  const currentPath = writable('');
 
   function selectComponent(component) {
     if ($selected !== component) {
@@ -164,40 +166,26 @@
 
   function addFile() {
     let newFile = {};
-    newFile.name = 'file';
-    newFile.type = 'svelte';
+    newFile.name = '';
+    newFile.type = '';
     newFile.source = '';
-    newFile.children = [];
-    //children.unshift(newFile);
+    newFile.editing = true;
+    // console.log(newFile);
+    // components.update(components => components.concat(newFile));
+    // $folders = componentsToFolder($components);
+    let currentFolder = $folders;
+    let splitPath = $currentPath && $currentPath.split('/');
 
-    //$components = convertToComponent($folders);
-  }
-
-  function convertToComponent(file) {
-    let initialPath = '';
-    let components = [];
-
-    function c(x, path) {
-      x.forEach(f => {
-        if (f.type === 'folder') {
-          initialPath += `${f.name}/`;
-          c(f.files, initialPath);
-          initialPath = path ? `${path}` : '';
-        } else {
-          if (f.name === 'index') {
-            initialPath = initialPath.slice(0, -1);
-            f.name = '';
-          }
-          components.push({
-            name: `${initialPath}${f.name}`,
-            type: f.type,
-            source: f.source,
-          });
-        }
-      });
+    while (splitPath.length > 0) {
+      let searchName = splitPath.shift();
+      currentFolder = currentFolder.children
+        ? currentFolder.children.find(({ name }) => name === searchName)
+        : currentFolder.find(({ name }) => name === searchName);
     }
-    c(file);
-    return components;
+    currentFolder.children
+      ? currentFolder.children.push(newFile)
+      : $folders.push(newFile);
+    $folders = $folders;
   }
 </script>
 

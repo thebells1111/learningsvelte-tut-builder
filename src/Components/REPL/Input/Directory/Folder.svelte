@@ -7,13 +7,12 @@
   export let expanded = false;
   export let name;
   export let children;
-  export let path = 'App';
+  export let path = '';
   export let selectComponent;
 
   function toggle() {
     expanded = !expanded;
     $currentPath = path || App;
-    console.log($currentPath);
   }
 </script>
 
