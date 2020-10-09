@@ -4,13 +4,16 @@
   export let component;
   import { getContext } from 'svelte';
   import folderToComponents from '../../../../../utils/folderToComponents';
-  const { selectComponent, currentPath } = getContext('Directory');
+  const { selectComponent, currentPath, currentComponent } = getContext(
+    'Directory'
+  );
   const { folders } = getContext('Controls');
   export let newName = component.name
     ? `${component.name}.${component.type}`
     : '';
 
   function handleClick() {
+    $currentComponent = component;
     selectComponent(component);
   }
 
@@ -63,8 +66,29 @@
     }
   }
 
-  function handleDelete(component) {
+  function handleDelete() {
     deleteFile();
+  }
+
+  function contextMenu(e) {
+    e.preventDefault();
+    console.log(e);
+  }
+
+  function handleEnter(node) {
+    function enter(e) {
+      if (e.keyCode === 13) {
+        e.preventDefault();
+        e.target.blur();
+      }
+    }
+
+    node.addEventListener('keydown', enter);
+    return {
+      destroy() {
+        node.removeEventListener('keydown', enter);
+      },
+    };
   }
 </script>
 
@@ -72,13 +96,15 @@
   style="background-image: url(icons/{component.type}.svg)"
   on:click={handleClick}
   on:dblclick={edit}
+  on:contextmenu={contextMenu}
+  class:active-component={$currentComponent === component}
 >
   {component.name}.{component.type}
   {#if !(component.name === 'App' && component.type === 'svelte')}
     <button on:click={() => handleDelete(component)}>x</button>
   {/if}
   {#if component.editing}
-    <input bind:value={newName} use:focus on:blur={addFile} />
+    <input bind:value={newName} use:focus use:handleEnter on:blur={addFile} />
   {/if}
 </div>
 
@@ -89,9 +115,18 @@
     background-size: 1em 1em;
     cursor: pointer;
     position: relative;
+    white-space: nowrap;
+    overflow-x: hidden;
+    overflow-y: hidden;
   }
+
   div:hover {
-    background-color: #b0dcf5;
+    background-color: #e4e4e4;
+    padding-left: 100px;
+    background-position: 76px 2px;
+    position: relative;
+    right: 76px;
+    width: 100%;
   }
 
   input {
@@ -99,5 +134,15 @@
     padding: 0.25em;
     top: calc(-0.25em - 1px);
     left: calc(1.25em - 1px);
+    width: calc(100% - 1.25em - 1px);
+  }
+
+  .active-component {
+    background-color: #b0dcf5;
+    padding-left: 100px;
+    background-position: 76px 2px;
+    position: relative;
+    right: 76px;
+    width: 100%;
   }
 </style>

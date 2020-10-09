@@ -7,6 +7,7 @@
   const { components, selected, request_focus, rebundle } = getContext('REPL');
   const { folders } = getContext('Controls');
   const currentPath = writable('');
+  const currentComponent = writable('');
   function selectComponent(component) {
     if ($selected !== component) {
       editing = null;
@@ -15,8 +16,10 @@
   }
   setContext('Directory', {
     currentPath,
+    currentComponent,
     selectComponent,
   });
+
   let editing = null;
   function editTab(component) {
     if ($selected === component) {
@@ -157,21 +160,21 @@
         ? currentFolder.children.find(({ name }) => name === searchName)
         : currentFolder.find(({ name }) => name === searchName);
     }
-    currentFolder.children
-      ? currentFolder.children.push(newFile)
-      : $folders.push(newFile);
+    if (currentFolder.children) {
+      currentFolder.children.push(newFile);
+    } else {
+      $folders.push(newFile);
+    }
     $folders = $folders;
   }
 </script>
 
 <div>
   <button class="add-folder" on:click={addFolder} />
-
   <button class="add-file" on:click={addFile} />
   <Folder
-    name="src"
+    component={{ name: 'src', path: '', children: $folders }}
     isFirst={true}
-    children={$folders}
     expanded
     {selectComponent}
   />
@@ -181,12 +184,15 @@
   div {
     position: relative !important;
     height: auto !important;
+    overflow-x: hidden;
+    width: 100%;
   }
 
   button {
     background: 0 0.1em no-repeat;
     width: 24px;
     height: 24px;
+    border: none;
   }
 
   .add-folder {

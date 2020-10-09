@@ -1,12 +1,11 @@
 <script>
   import File from './File.svelte';
   import { getContext } from 'svelte';
+  import { slide } from 'svelte/transition';
   const { folders } = getContext('Controls');
   const { components } = getContext('REPL');
-  const { currentPath } = getContext('Directory');
-  export let name;
-  export let children;
-  export let path;
+  const { currentPath, currentComponent } = getContext('Directory');
+  export let component;
   export let expanded = true;
   export let isFirst = false;
   export let selectComponent;
@@ -21,25 +20,28 @@
 
   function toggle() {
     expanded = !expanded;
-    $currentPath = path;
+    $currentPath = component.path;
+    $currentComponent = component;
   }
 </script>
 
-<div class:expanded on:click={toggle} style="--folder: {folder}">{name}</div>
+<div
+  class:expanded
+  on:click={toggle}
+  style="--folder: {folder}"
+  class:active-component={$currentComponent === component}
+>
+  {component.name}
+</div>
 
 {#if expanded}
-  <ul>
-    {#each children as component}
+  <ul transition:slide={{ duration: 100 }}>
+    {#each component.children as childComponent}
       <li>
-        {#if component.type === 'directory'}
-          <svelte:self
-            name={component.name}
-            children={component.children}
-            path={component.path}
-            expanded={false}
-          />
+        {#if childComponent.type === 'directory'}
+          <svelte:self component={childComponent} expanded={false} />
         {:else}
-          <File {component} {selectComponent} />
+          <File component={childComponent} {selectComponent} />
         {/if}
       </li>
     {/each}
@@ -58,7 +60,12 @@
   }
 
   div:hover {
-    background-color: #b0dcf5;
+    background-color: #e4e4e4;
+    padding-left: 100px;
+    background-position: 76px 2px;
+    position: relative;
+    right: 76px;
+    width: 100%;
   }
 
   /*  .expanded {
@@ -74,5 +81,14 @@
 
   li {
     padding: 0.2em 0;
+  }
+
+  .active-component {
+    background-color: #b0dcf5;
+    padding-left: 100px;
+    background-position: 76px 2px;
+    position: relative;
+    right: 76px;
+    width: 100%;
   }
 </style>
