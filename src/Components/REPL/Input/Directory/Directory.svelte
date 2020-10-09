@@ -1,28 +1,28 @@
 <script>
   import Folder from './Folder.svelte';
-  import { getContext } from 'svelte';
-  const { folders, currentPath } = getContext('Controls');
-
+  import { getContext, setContext } from 'svelte';
+  import { writable } from 'svelte/store';
+  import componentsToFolder from '../../../../../utils/componentsToFolder';
   export let handle_select;
-
   const { components, selected, request_focus, rebundle } = getContext('REPL');
-
-  let editing = null;
-
+  const { folders } = getContext('Controls');
+  const currentPath = writable('');
   function selectComponent(component) {
-    console.log($selected);
     if ($selected !== component) {
       editing = null;
       handle_select(component);
     }
   }
-
+  setContext('Directory', {
+    currentPath,
+    selectComponent,
+  });
+  let editing = null;
   function editTab(component) {
     if ($selected === component) {
       editing = $selected;
     }
   }
-
   function closeEdit() {
     const match = /(.+)\.(svelte|js|json|md)$/.exec($selected.name);
     $selected.name = match ? match[1] : $selected.name;
@@ -34,28 +34,20 @@
       } while (isComponentNameUsed($selected));
     }
     if (match && match[2]) $selected.type = match[2];
-
     editing = null;
-
     // re-select, in case the type changed
     handle_select($selected);
-
     components = components; // TODO necessary?
-
     // focus the editor, but wait a beat (so key events aren't misdirected)
     setTimeout(request_focus);
-
     rebundle();
   }
-
   function remove(component) {
     let result = confirm(
       `Are you sure you want to delete ${component.name}.${component.type}?`
     );
-
     if (result) {
       const index = $components.indexOf(component);
-
       if (~index) {
         components.set(
           $components.slice(0, index).concat($components.slice(index + 1))
@@ -63,63 +55,49 @@
       } else {
         console.error(`Could not find component! That's... odd`);
       }
-
       handle_select($components[index] || $components[$components.length - 1]);
     }
   }
-
   function selectInput(event) {
     setTimeout(() => {
       event.target.select();
     }, 0);
   }
-
   let uid = 1;
-
   function addNew() {
     const component = {
       name: uid++ ? `Component${uid}` : 'Component1',
       type: 'svelte',
       source: '',
     };
-
     editing = component;
-
     setTimeout(() => {
       // TODO we can do this without IDs
       document.getElementById(component.name).scrollIntoView(false);
     });
-
     components.update(components => components.concat(component));
     handle_select(component);
   }
-
   function isComponentNameUsed(editing) {
     return $components.find(
       component => component !== editing && component.name === editing.name
     );
   }
-
   // drag and drop
   let from = null;
   let over = null;
-
   function dragStart(event) {
     from = event.currentTarget.id;
   }
-
   function dragLeave() {
     over = null;
   }
-
   function dragOver(event) {
     event.preventDefault();
     over = event.currentTarget.id;
   }
-
   function dragEnd(event) {
     event.preventDefault();
-
     if (from && over) {
       const from_index = $components.findIndex(
         component => component.name === from
@@ -127,9 +105,7 @@
       const to_index = $components.findIndex(
         component => component.name === over
       );
-
       const from_component = $components[from_index];
-
       $components.splice(from_index, 1);
       components.set(
         $components
@@ -140,13 +116,11 @@
     }
     from = over = null;
   }
-
   function focus(node) {
     node.select();
   }
-
   function addFolder() {
-    console.log($folders);
+    //console.log(children);
     let newFolder = {};
     newFolder.name = 'folder';
     newFolder.type = 'directory';
@@ -154,57 +128,48 @@
       ? $currentPath + '/' + newFolder.name
       : newFolder.name;
     newFolder.children = [];
-    $folders.unshift(newFolder);
-    const result = $folders.find(({ name }) => name === newFolder.name);
-    console.log(result);
+    //children.unshift(newFolder);
+    let currentFolder = $folders;
+    let splitPath = $currentPath && $currentPath.split('/');
+    while (splitPath.length > 0) {
+      let searchName = splitPath.shift();
+      currentFolder = currentFolder.children
+        ? currentFolder.children.find(({ name }) => name === searchName)
+        : currentFolder.find(({ name }) => name === searchName);
+    }
+    currentFolder.children
+      ? currentFolder.children.push(newFolder)
+      : $folders.push(newFolder);
     $folders = $folders;
   }
-
   function addFile() {
     let newFile = {};
-    newFile.name = 'file';
-    newFile.type = 'svelte';
+    newFile.name = '';
+    newFile.type = '';
     newFile.source = '';
-    newFile.children = [];
-    children.unshift(newFile);
-    console.log($folders);
-    $components = convertToComponent($folders);
-  }
-
-  function convertToComponent(file) {
-    let initialPath = '';
-    let components = [];
-
-    function c(x, path) {
-      x.forEach(f => {
-        if (f.type === 'folder') {
-          initialPath += `${f.name}/`;
-          c(f.files, initialPath);
-          initialPath = path ? `${path}` : '';
-        } else {
-          if (f.name === 'index') {
-            initialPath = initialPath.slice(0, -1);
-            f.name = '';
-          }
-          components.push({
-            name: `${initialPath}${f.name}`,
-            type: f.type,
-            source: f.source,
-          });
-        }
-      });
+    newFile.editing = true;
+    // console.log(newFile);
+    // components.update(components => components.concat(newFile));
+    // $folders = componentsToFolder($components);
+    let currentFolder = $folders;
+    let splitPath = $currentPath && $currentPath.split('/');
+    while (splitPath.length > 0) {
+      let searchName = splitPath.shift();
+      currentFolder = currentFolder.children
+        ? currentFolder.children.find(({ name }) => name === searchName)
+        : currentFolder.find(({ name }) => name === searchName);
     }
-    c(file);
-    return components;
+    currentFolder.children
+      ? currentFolder.children.push(newFile)
+      : $folders.push(newFile);
+    $folders = $folders;
   }
 </script>
 
 <div>
-
   <button class="add-folder" on:click={addFolder} />
 
   <button class="add-file" on:click={addFile} />
-
   <Folder
     name="src"
     isFirst={true}
