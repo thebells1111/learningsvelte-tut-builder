@@ -27,12 +27,13 @@
   }
 </script>
 
-<folder style="--padding-level: {paddingLevel * 1.5}em">
+<folder style="--padding-level: {paddingLevel * 0.5}em">
   <div
     class:expanded
     on:click={toggle}
     style="--folder: {folder}"
     class:active-component={$currentComponent === component}
+    class:first-folder={isFirst}
   >
     {component.name}
   </div>
@@ -62,9 +63,11 @@
     background: 0 0.1em no-repeat;
     background-image: var(--folder);
     background-size: 1em 1em;
+    background-position: 0.5em;
     font-weight: bold;
     cursor: pointer;
     width: 100%;
+    border-left: 1px solid red;
   }
 
   folder {
@@ -86,7 +89,7 @@
     margin: 0 0 0 0.5em;
     margin: 0;
     list-style: none;
-    border-left: 1px solid #eee;
+    /* border-left: 1px solid #eee; */
   }
 
   li {
@@ -96,5 +99,9 @@
   .active-component,
   .active-component:hover {
     background-color: #b0dcf5;
+  }
+
+  .first-folder {
+    border: none;
   }
 </style>
