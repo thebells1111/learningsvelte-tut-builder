@@ -1,30 +1,21 @@
 <script>
   import Folder from './Folder.svelte';
-  import { getContext, setContext } from 'svelte';
-  import { writable } from 'svelte/store';
-
-  import componentsToFolder from '../../../../../utils/componentsToFolder';
+  import { getContext } from 'svelte';
+  const { folders, currentPath } = getContext('Controls');
 
   export let handle_select;
 
   const { components, selected, request_focus, rebundle } = getContext('REPL');
-  const { folders } = getContext('Controls');
 
-  const currentPath = writable('');
+  let editing = null;
 
   function selectComponent(component) {
+    console.log($selected);
     if ($selected !== component) {
       editing = null;
       handle_select(component);
     }
   }
-
-  setContext('Directory', {
-    currentPath,
-    selectComponent,
-  });
-
-  let editing = null;
 
   function editTab(component) {
     if ($selected === component) {
@@ -155,7 +146,7 @@
   }
 
   function addFolder() {
-    //console.log(children);
+    console.log($folders);
     let newFolder = {};
     newFolder.name = 'folder';
     newFolder.type = 'directory';
@@ -163,50 +154,57 @@
       ? $currentPath + '/' + newFolder.name
       : newFolder.name;
     newFolder.children = [];
-    //children.unshift(newFolder);
-    let currentFolder = $folders;
-    let splitPath = $currentPath && $currentPath.split('/');
-
-    while (splitPath.length > 0) {
-      let searchName = splitPath.shift();
-      currentFolder = currentFolder.children
-        ? currentFolder.children.find(({ name }) => name === searchName)
-        : currentFolder.find(({ name }) => name === searchName);
-    }
-    currentFolder.children
-      ? currentFolder.children.push(newFolder)
-      : $folders.push(newFolder);
+    $folders.unshift(newFolder);
+    const result = $folders.find(({ name }) => name === newFolder.name);
+    console.log(result);
     $folders = $folders;
   }
 
   function addFile() {
     let newFile = {};
-    newFile.name = '';
-    newFile.type = '';
+    newFile.name = 'file';
+    newFile.type = 'svelte';
     newFile.source = '';
-    newFile.editing = true;
-    // console.log(newFile);
-    // components.update(components => components.concat(newFile));
-    // $folders = componentsToFolder($components);
-    let currentFolder = $folders;
-    let splitPath = $currentPath && $currentPath.split('/');
+    newFile.children = [];
+    children.unshift(newFile);
+    console.log($folders);
+    $components = convertToComponent($folders);
+  }
 
-    while (splitPath.length > 0) {
-      let searchName = splitPath.shift();
-      currentFolder = currentFolder.children
-        ? currentFolder.children.find(({ name }) => name === searchName)
-        : currentFolder.find(({ name }) => name === searchName);
+  function convertToComponent(file) {
+    let initialPath = '';
+    let components = [];
+
+    function c(x, path) {
+      x.forEach(f => {
+        if (f.type === 'folder') {
+          initialPath += `${f.name}/`;
+          c(f.files, initialPath);
+          initialPath = path ? `${path}` : '';
+        } else {
+          if (f.name === 'index') {
+            initialPath = initialPath.slice(0, -1);
+            f.name = '';
+          }
+          components.push({
+            name: `${initialPath}${f.name}`,
+            type: f.type,
+            source: f.source,
+          });
+        }
+      });
     }
-    currentFolder.children
-      ? currentFolder.children.push(newFile)
-      : $folders.push(newFile);
-    $folders = $folders;
+    c(file);
+    return components;
   }
 </script>
 
 <div>
-  <button on:click={addFolder}>f</button>
-  <button on:click={addFile}>+</button>
+
+  <button class="add-folder" on:click={addFolder} />
+
+  <button class="add-file" on:click={addFile} />
+
   <Folder
     name="src"
     isFirst={true}
@@ -220,5 +218,19 @@
   div {
     position: relative !important;
     height: auto !important;
+  }
+
+  button {
+    background: 0 0.1em no-repeat;
+    width: 24px;
+    height: 24px;
+  }
+
+  .add-folder {
+    background-image: url(/icons/new-folder.svg);
+  }
+
+  .add-file {
+    background-image: url(/icons/new-file.svg);
   }
 </style>
