@@ -1,12 +1,13 @@
 <script>
   import File from './File.svelte';
   import { getContext } from 'svelte';
-  const { folders, currentPath } = getContext('Controls');
+  const { folders } = getContext('Controls');
   const { components } = getContext('REPL');
-  export let expanded = true;
+  const { currentPath } = getContext('Directory');
   export let name;
   export let children;
   export let path;
+  export let expanded = true;
   export let isFirst = false;
   export let selectComponent;
   let folderBase = 'svelte';
@@ -21,7 +22,6 @@
   function toggle() {
     expanded = !expanded;
     $currentPath = path;
-    console.log($currentPath);
   }
 </script>
 

@@ -200,8 +200,11 @@
 </script>
 
 <div>
+
   <button class="add-folder" on:click={addFolder} />
+
   <button class="add-file" on:click={addFile} />
+
   <Folder
     name="src"
     isFirst={true}

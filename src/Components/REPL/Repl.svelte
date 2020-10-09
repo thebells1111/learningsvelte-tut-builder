@@ -8,6 +8,7 @@
   import Output from './Output/index.svelte';
   import Bundler from './Bundler.js';
   import { is_browser } from './env.js';
+  import componentsToFolder from '../../../utils/componentsToFolder';
 
   export let workersUrl;
   export let packagesUrl = 'https://unpkg.com';
@@ -107,7 +108,7 @@
   const selected = writable(null);
   const bundle = writable(null);
   const foldLines = writable(null);
-  $: $components = $folders;
+  $: $folders = $components && componentsToFolder($components);
 
   const compile_options = writable({
     generate: 'dom',
