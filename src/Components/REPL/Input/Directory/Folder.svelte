@@ -10,12 +10,14 @@
   export let isFirst = false;
   export let selectComponent;
   let folderBase = 'svelte';
+  export let paddingLevel = 1;
   $: folder = expanded
     ? `url(/icons/folder-${folderBase}-open.svg)`
     : `url(/icons/folder-${folderBase}.svg)`;
 
   if (isFirst) {
     folderBase = 'src';
+    paddingLevel = 0;
   }
 
   function toggle() {
@@ -25,21 +27,27 @@
   }
 </script>
 
-<div
-  class:expanded
-  on:click={toggle}
-  style="--folder: {folder}"
-  class:active-component={$currentComponent === component}
->
-  {component.name}
-</div>
+<folder style="--padding-level: {paddingLevel * 1.5}em">
+  <div
+    class:expanded
+    on:click={toggle}
+    style="--folder: {folder}"
+    class:active-component={$currentComponent === component}
+  >
+    {component.name}
+  </div>
+</folder>
 
 {#if expanded}
   <ul transition:slide={{ duration: 100 }}>
     {#each component.children as childComponent}
       <li>
         {#if childComponent.type === 'directory'}
-          <svelte:self component={childComponent} expanded={false} />
+          <svelte:self
+            component={childComponent}
+            expanded={false}
+            paddingLevel={paddingLevel + 1}
+          />
         {:else}
           <File component={childComponent} {selectComponent} />
         {/if}
@@ -59,13 +67,13 @@
     width: 100%;
   }
 
-  div:hover {
+  folder {
+    display: block;
+    padding-left: var(--padding-level);
+  }
+
+  folder:hover {
     background-color: #e4e4e4;
-    padding-left: 100px;
-    background-position: 76px 2px;
-    position: relative;
-    right: 76px;
-    width: 100%;
   }
 
   /*  .expanded {
@@ -74,21 +82,19 @@
 
   ul {
     padding: 0.2em 0 0 0.5em;
+    padding: 0;
     margin: 0 0 0 0.5em;
+    margin: 0;
     list-style: none;
     border-left: 1px solid #eee;
   }
 
   li {
-    padding: 0.2em 0;
+    /* padding: 0.2em 0; */
   }
 
-  .active-component {
+  .active-component,
+  .active-component:hover {
     background-color: #b0dcf5;
-    padding-left: 100px;
-    background-position: 76px 2px;
-    position: relative;
-    right: 76px;
-    width: 100%;
   }
 </style>
