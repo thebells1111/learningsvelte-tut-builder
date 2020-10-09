@@ -132,8 +132,8 @@
   input {
     position: absolute;
     padding: 0.25em;
-    top: calc(-0.25em - 1px);
-    left: calc(1.25em - 1px);
+    left: 0;
+    top: 0.125em;
     width: calc(100% - 1.25em - 1px);
   }
 
@@ -144,5 +144,10 @@
     position: relative;
     right: 76px;
     width: 100%;
+  }
+  button {
+    background-color: transparent;
+    border: none;
+    padding: 0 1em;
   }
 </style>
