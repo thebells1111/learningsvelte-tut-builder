@@ -147,10 +147,8 @@
     newFile.name = '';
     newFile.type = '';
     newFile.source = '';
+    newFile.path = $currentPath;
     newFile.editing = true;
-    // console.log(newFile);
-    // components.update(components => components.concat(newFile));
-    // $folders = componentsToFolder($components);
     let currentFolder = $folders;
     let splitPath = $currentPath && $currentPath.split('/');
     while (splitPath.length > 0) {

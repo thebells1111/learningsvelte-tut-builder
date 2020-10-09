@@ -90,7 +90,6 @@
     projects,
     chapters,
     folders,
-    currentPath,
   });
 
   onMount(function mount() {
