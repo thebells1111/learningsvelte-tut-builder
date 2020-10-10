@@ -251,7 +251,7 @@
     {fixed}
   >
     <section slot="a">
-      <SplitPane type={'horizontal'} pos={30}>
+      <SplitPane type={'horizontal'} pos={50}>
         <section slot="a">
           <Directory {handle_select} />
         </section>

@@ -6,18 +6,23 @@
   export let handle_select;
   const { components, selected, request_focus, rebundle } = getContext('REPL');
   const { folders } = getContext('Controls');
+
   const currentPath = writable('');
   const currentComponent = writable('');
+  const editingFileName = writable(false);
+
   function selectComponent(component) {
     if ($selected !== component) {
       editing = null;
       handle_select(component);
     }
   }
+
   setContext('Directory', {
     currentPath,
     currentComponent,
     selectComponent,
+    editingFileName,
   });
 
   let editing = null;
@@ -125,11 +130,12 @@
   function addFolder() {
     //console.log(children);
     let newFolder = {};
-    newFolder.name = 'folder';
+    newFolder.name = '';
     newFolder.type = 'directory';
     newFolder.path = $currentPath
       ? $currentPath + '/' + newFolder.name
       : newFolder.name;
+    newFolder.editing = true;
     newFolder.children = [];
     //children.unshift(newFolder);
     let currentFolder = $folders;
@@ -143,6 +149,7 @@
     currentFolder.children
       ? currentFolder.children.push(newFolder)
       : $folders.push(newFolder);
+    $currentComponent.expanded = true;
     $folders = $folders;
   }
   function addFile() {
@@ -165,27 +172,27 @@
     } else {
       $folders.push(newFile);
     }
+    $currentComponent.expanded = true;
     $folders = $folders;
   }
 </script>
 
-<div>
+<div class:editing={editingFileName}>
   <button class="add-folder" on:click={addFolder} />
   <button class="add-file" on:click={addFile} />
   <Folder
-    component={{ name: 'src', path: '', children: $folders }}
+    component={{ name: 'src', path: '', children: $folders, expanded: true }}
     isFirst={true}
-    expanded
     {selectComponent}
   />
 </div>
 
 <style>
   div {
-    position: relative !important;
-    height: auto !important;
     overflow-x: hidden;
     width: 100%;
+    height: 100%;
+    padding-top: 0.5em;
   }
 
   button {
@@ -201,5 +208,8 @@
 
   .add-file {
     background-image: url(/icons/new-file.svg);
+  }
+
+  .editing {
   }
 </style>

@@ -8,9 +8,9 @@
     'Directory'
   );
   const { folders } = getContext('Controls');
-  export let newName = component.name
-    ? `${component.name}.${component.type}`
-    : '';
+  export let paddingLevel = 1;
+
+  let newName = component.name ? `${component.name}.${component.type}` : '';
 
   function handleClick() {
     $currentComponent = component;
@@ -92,58 +92,62 @@
   }
 </script>
 
-<div
-  style="background-image: url(icons/{component.type}.svg)"
+<file
+  style="--padding-level: {0.05 + paddingLevel * 1}em"
+  class:active-component={$currentComponent === component}
   on:click={handleClick}
   on:dblclick={edit}
-  on:contextmenu={contextMenu}
-  class:active-component={$currentComponent === component}
 >
-  {component.name}.{component.type}
-  {#if !(component.name === 'App' && component.type === 'svelte')}
-    <button on:click={() => handleDelete(component)}>x</button>
-  {/if}
-  {#if component.editing}
-    <input bind:value={newName} use:focus use:handleEnter on:blur={addFile} />
-  {/if}
-</div>
+  <div style="background-image: url(icons/{component.type}.svg)">
+    {component.name}.{component.type}
+    {#if !(component.name === 'App' && component.type === 'svelte')}
+      <button on:click={() => handleDelete(component)}>x</button>
+    {/if}
+    {#if component.editing}
+      <input bind:value={newName} use:focus use:handleEnter on:blur={addFile} />
+    {/if}
+  </div>
+</file>
 
 <style>
   div {
-    padding: 0 0 0 1.5em;
+    padding: 0 0 0 1.8em;
     background: 0 0.1em no-repeat;
     background-size: 1em 1em;
-    cursor: pointer;
+    background-position: 0.5em;
     position: relative;
     white-space: nowrap;
     overflow-x: hidden;
     overflow-y: hidden;
+    border-left: 1px solid #eee;
   }
 
-  div:hover {
+  file {
+    display: block;
+    padding-left: var(--padding-level);
+    cursor: pointer;
+  }
+
+  file:hover {
     background-color: #e4e4e4;
-    padding-left: 100px;
-    background-position: 76px 2px;
-    position: relative;
-    right: 76px;
-    width: 100%;
   }
 
   input {
     position: absolute;
     padding: 0.25em;
-    left: 0;
+    left: 0.25em;
     top: 0.125em;
-    width: calc(100% - 1.25em - 1px);
+    width: 100%;
+    max-width: 175px;
+    border: 1px solid#555;
+    border-radius: 2px;
+    outline: none;
+    opacity: 100%;
   }
 
-  .active-component {
+  .active-component,
+  file.active-component:hover {
     background-color: #b0dcf5;
-    padding-left: 100px;
-    background-position: 76px 2px;
-    position: relative;
-    right: 76px;
-    width: 100%;
   }
   button {
     background-color: transparent;
