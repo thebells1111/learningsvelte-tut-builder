@@ -146,6 +146,7 @@
     font-weight: bold;
     width: 100%;
     border-left: 1px solid #eee;
+    position: relative;
   }
 
   folder {
@@ -171,5 +172,18 @@
 
   .first-folder {
     border: none;
+  }
+
+  input {
+    position: absolute;
+    padding: 0.25em;
+    left: 0.25em;
+    top: 0.125em;
+    width: 100%;
+    max-width: 175px;
+    border: 1px solid#555;
+    border-radius: 2px;
+    outline: none;
+    opacity: 100%;
   }
 </style>
