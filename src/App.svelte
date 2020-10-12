@@ -17,8 +17,7 @@
   function splitPane() {
     function split() {
       splitInstance = Split(['#editor', '#repl'], {
-        // sizes: [100 / 3, 200 / 3],
-        sizes: [0, 100],
+        sizes: [100 / 4, 300 / 4],
         direction: 'horizontal',
         elementStyle: (dimension, size, gutterSize) => ({
           'flex-basis': `calc(${size}% - ${gutterSize}px)`,
@@ -61,6 +60,11 @@
         type: 'svelte',
         source: 'Hello',
       },
+      {
+        name: 'components/Display/Screen/Next',
+        type: 'svelte',
+        source: 'Hello',
+      },
     ],
     selectedComponent: 'App.svelte',
     foldLine: [],
@@ -93,10 +97,9 @@
   });
 
   onMount(function mount() {
-    $mde = true; //delete this
     if (repl && $mde) {
-      //initializeApp();
-      $folders = componentsToFolder($appA.components);
+      initializeApp();
+      //$folders = componentsToFolder($appA.components);
       repl.set($appA);
     } else {
       setTimeout(mount, 1);
@@ -104,23 +107,21 @@
   });
 
   function initializeApp() {
-    //$mde.value($directories[$projectName][$chapterName].text);
+    $mde.value($directories[$projectName][$chapterName].text);
 
     $folders = filesToTreeNodes(
       $directories[$projectName][$chapterName]['app-a'].folders
     );
-
-    console.log($folders);
 
     $appA.components = folderToComponents($folders);
     repl.set($appA);
   }
 </script>
 
-<!-- <AppControls {repl} bind:htmlContent /> -->
+<AppControls {repl} bind:htmlContent />
 <panel-container use:splitPane>
   <div id="editor">
-    <!-- <MarkdownEditor bind:markdownContent /> -->
+    <MarkdownEditor bind:markdownContent />
   </div>
 
   <div id="repl">

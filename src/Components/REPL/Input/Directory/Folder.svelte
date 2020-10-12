@@ -2,7 +2,6 @@
   import File from './File.svelte';
   import { onMount, getContext } from 'svelte';
   const { folders } = getContext('Controls');
-  const { components } = getContext('REPL');
   const { currentPath, currentComponent } = getContext('Directory');
   export let component;
   export let isFirst = false;
@@ -165,6 +164,10 @@
     list-style: none;
   }
 
+  li {
+    height: 32px;
+  }
+
   .active-component,
   folder.active-component:hover {
     background-color: #b0dcf5;
@@ -176,14 +179,18 @@
 
   input {
     position: absolute;
-    padding: 0.25em;
-    left: 0.25em;
-    top: 0.125em;
+    padding: 0 0.25em;
+    left: 1.5em;
     width: 100%;
     max-width: 175px;
     border: 1px solid#555;
     border-radius: 2px;
     outline: none;
-    opacity: 100%;
+    font: 300 var(--h4) / var(--lh) var(--font);
+    color: var(--text);
+    letter-spacing: -0.013em;
+    font-weight: bold;
+    box-sizing: content-box;
+    height: 32px;
   }
 </style>

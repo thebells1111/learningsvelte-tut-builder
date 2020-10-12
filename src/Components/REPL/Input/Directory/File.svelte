@@ -1,20 +1,30 @@
 <script>
-  import { splitCells } from 'marked/src/helpers';
-
   export let component;
   import { getContext } from 'svelte';
-  import folderToComponents from '../../../../../utils/folderToComponents';
-  const { selectComponent, currentPath, currentComponent } = getContext(
-    'Directory'
-  );
+  import SvelteIcon from './icons/SvelteIcon.svelte';
+  import JsonIcon from './icons/JsonIcon.svelte';
+  import JavaScriptIcon from './icons/JavaScriptIcon.svelte';
+  import FileIcon from './icons/FileIcon.svelte';
+  const {
+    selectComponent,
+    currentPath,
+    currentComponent,
+    selectFile,
+  } = getContext('Directory');
   const { folders } = getContext('Controls');
   export let paddingLevel = 1;
 
   let newName = component.name ? `${component.name}.${component.type}` : '';
 
+  let icons = {
+    svelte: SvelteIcon,
+    json: JsonIcon,
+    js: JavaScriptIcon,
+    file: FileIcon,
+  };
+
   function handleClick() {
-    $currentComponent = component;
-    selectComponent(component);
+    selectFile(component);
   }
 
   function focus(node) {
@@ -38,8 +48,10 @@
   }
 
   function deleteFile() {
+    console.log(component);
+    console.log('delete');
     let currentFolder = $folders;
-    let splitPath = $currentPath && $currentPath.split('/');
+    let splitPath = component.path.split('/');
     while (splitPath.length > 0) {
       let searchName = splitPath.shift();
       currentFolder = currentFolder.children
@@ -50,6 +62,10 @@
     let fileIndex = currentFolder.children
       ? currentFolder.children.findIndex(({ name }) => name === component.name)
       : currentFolder.findIndex(({ name }) => name === component.name);
+
+    console.log(currentFolder);
+    console.log(fileIndex);
+    console.log(component.name);
 
     if (currentFolder.children) {
       currentFolder.children.splice(fileIndex, 1);
@@ -98,23 +114,38 @@
   on:click={handleClick}
   on:dblclick={edit}
 >
-  <div style="background-image: url(icons/{component.type}.svg)">
-    {component.name}.{component.type}
+  <div>
+    <svelte:component this={icons[component.type] || icons.file} />
+    <span>{component.name}.{component.type}</span>
     {#if !(component.name === 'App' && component.type === 'svelte')}
       <button on:click={() => handleDelete(component)}>x</button>
     {/if}
     {#if component.editing}
-      <input bind:value={newName} use:focus use:handleEnter on:blur={addFile} />
+      <input
+        bind:value={newName}
+        use:focus
+        use:handleEnter
+        on:blur={addFile}
+        spellcheck="false"
+      />
     {/if}
   </div>
 </file>
 
 <style>
+  file {
+    display: block;
+    padding-left: var(--padding-level);
+    cursor: pointer;
+    align-items: center;
+  }
+
+  file:hover {
+    background-color: #e4e4e4;
+  }
+
   div {
-    padding: 0 0 0 1.8em;
-    background: 0 0.1em no-repeat;
-    background-size: 1em 1em;
-    background-position: 0.5em;
+    padding: 0 0 0 0.5em;
     position: relative;
     white-space: nowrap;
     overflow-x: hidden;
@@ -122,27 +153,9 @@
     border-left: 1px solid #eee;
   }
 
-  file {
-    display: block;
-    padding-left: var(--padding-level);
-    cursor: pointer;
-  }
-
-  file:hover {
-    background-color: #e4e4e4;
-  }
-
-  input {
-    position: absolute;
-    padding: 0.25em;
-    left: 0.25em;
-    top: 0.125em;
-    width: 100%;
-    max-width: 175px;
-    border: 1px solid#555;
-    border-radius: 2px;
-    outline: none;
-    opacity: 100%;
+  span {
+    position: relative;
+    padding-left: 0.125em;
   }
 
   .active-component,
@@ -153,5 +166,25 @@
     background-color: transparent;
     border: none;
     padding: 0 1em;
+    z-index: 99;
+  }
+
+  input {
+    position: absolute;
+    padding: 0 0.125em;
+    left: 1.875em;
+    width: calc(100% - 32px);
+    max-width: 175px;
+    border: 1px solid#555;
+    border-radius: 2px;
+    outline: none;
+    font: 300 var(--h4) / var(--lh) var(--font);
+    color: var(--text);
+    letter-spacing: -0.013em;
+    box-sizing: content-box;
+    height: calc(100% - 2px);
+    /* opacity: 25%;
+    color: red;
+    background-color: transparent; */
   }
 </style>

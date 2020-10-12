@@ -4,15 +4,11 @@ export default function folderToComponent(file) {
 
   function c(x, path) {
     x.forEach(f => {
-      if (f.type === 'folder') {
+      if (f.type === 'directory') {
         initialPath += `${f.name}/`;
-        c(f.files, initialPath);
+        c(f.children, initialPath);
         initialPath = path ? `${path}` : '';
       } else {
-        if (f.name === 'index') {
-          initialPath = initialPath.slice(0, -1);
-          f.name = '';
-        }
         components.push({
           name: `${initialPath}${f.name}`,
           type: f.type,

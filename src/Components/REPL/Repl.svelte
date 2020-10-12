@@ -9,6 +9,7 @@
   import Bundler from './Bundler.js';
   import { is_browser } from './env.js';
   import componentsToFolder from '../../../utils/componentsToFolder';
+  import folderToComponents from '../../../utils/folderToComponents';
 
   export let workersUrl;
   export let packagesUrl = 'https://unpkg.com';
@@ -108,7 +109,6 @@
   const selected = writable(null);
   const bundle = writable(null);
   const foldLines = writable(null);
-  $: $folders = $components && componentsToFolder($components);
 
   const compile_options = writable({
     generate: 'dom',
@@ -178,8 +178,7 @@
         component.source = event.detail.value;
         return component;
       });
-
-      components.update(c => c);
+      $components = folderToComponents($folders);
 
       // recompile selected component
       output.update($selected, $compile_options);
@@ -251,12 +250,11 @@
     {fixed}
   >
     <section slot="a">
-      <SplitPane type={'horizontal'} pos={50}>
+      <SplitPane type={'horizontal'} pos={33}>
         <section slot="a">
           <Directory {handle_select} />
         </section>
         <section slot="b">
-          <ComponentSelector {handle_select} />
           <ModuleEditor
             bind:this={input}
             errorLoc={sourceErrorLoc || runtimeErrorLoc}
@@ -304,7 +302,7 @@
 
   .container :global(section) {
     position: relative;
-    padding: 42px 0 0 0;
+    /* padding: 42px 0 0 0; */
     height: 100%;
     box-sizing: border-box;
   }
@@ -314,7 +312,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 42px;
+    /* height: 42px; */
     box-sizing: border-box;
   }
 
