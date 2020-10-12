@@ -52,6 +52,10 @@
     let name = newName;
     if (name) {
       component.name = name;
+      component.path = $currentPath
+        ? $currentPath + '/' + component.name
+        : component.name;
+      $currentPath = component.path;
     } else if (!component.name) {
       deleteFolder();
     }

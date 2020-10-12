@@ -5,13 +5,9 @@
   import JsonIcon from './icons/JsonIcon.svelte';
   import JavaScriptIcon from './icons/JavaScriptIcon.svelte';
   import FileIcon from './icons/FileIcon.svelte';
-  const {
-    selectComponent,
-    currentPath,
-    currentComponent,
-    selectFile,
-  } = getContext('Directory');
+  const { currentComponent, selectFile } = getContext('Directory');
   const { folders } = getContext('Controls');
+  const { handle_file_delete } = getContext('REPL');
   export let paddingLevel = 1;
 
   let newName = component.name ? `${component.name}.${component.type}` : '';
@@ -48,24 +44,31 @@
   }
 
   function deleteFile() {
-    console.log(component);
-    console.log('delete');
     let currentFolder = $folders;
     let splitPath = component.path.split('/');
     while (splitPath.length > 0) {
       let searchName = splitPath.shift();
-      currentFolder = currentFolder.children
-        ? currentFolder.children.find(({ name }) => name === searchName)
-        : currentFolder.find(({ name }) => name === searchName);
+      if (currentFolder.children) {
+        currentFolder = currentFolder.children.find(
+          ({ name, type }) => name === searchName && type === 'directory'
+        );
+      } else {
+        currentFolder.find(
+          ({ name, type }) => name === searchName && type === 'directory'
+        );
+      }
     }
 
-    let fileIndex = currentFolder.children
-      ? currentFolder.children.findIndex(({ name }) => name === component.name)
-      : currentFolder.findIndex(({ name }) => name === component.name);
-
-    console.log(currentFolder);
-    console.log(fileIndex);
-    console.log(component.name);
+    let fileIndex;
+    if (currentFolder.children && currentFolder.children.length > 0) {
+      fileIndex = currentFolder.children.findIndex(
+        ({ name }) => name === component.name
+      );
+    } else {
+      fileIndex = currentFolder.findIndex(
+        ({ name }) => name === component.name
+      );
+    }
 
     if (currentFolder.children) {
       currentFolder.children.splice(fileIndex, 1);
@@ -73,6 +76,7 @@
       currentFolder.splice(fileIndex, 1);
     }
     $folders = $folders;
+    handle_file_delete();
   }
 
   function edit() {
@@ -83,7 +87,12 @@
   }
 
   function handleDelete() {
-    deleteFile();
+    let result = confirm(
+      `Are you sure you want to delete ${component.name}.${component.type}?`
+    );
+    if (result) {
+      deleteFile();
+    }
   }
 
   function contextMenu(e) {
