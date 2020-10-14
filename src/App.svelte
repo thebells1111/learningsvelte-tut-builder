@@ -116,9 +116,9 @@
     );
     $appA.components = folderToComponents($folders);
     repl.set($appA);
-    $currentComponent = $folders[0];
-    repl.handle_select($currentComponent);
-    repl.focus();
+    // $currentComponent = $folders[0];
+    // repl.handle_select($currentComponent);
+    // repl.focus();
   }
 </script>
 
