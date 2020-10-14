@@ -27,6 +27,7 @@
     selectComponent,
     editingFileName,
     selectFile,
+    handle_select,
   });
 
   //let editing = null;
@@ -95,50 +96,13 @@
   //     component => component !== editing && component.name === editing.name
   //   );
   // }
-  // // drag and drop
-  // let from = null;
-  // let over = null;
-  // function dragStart(event) {
-  //   from = event.currentTarget.id;
-  // }
-  // function dragLeave() {
-  //   over = null;
-  // }
-  // function dragOver(event) {
-  //   event.preventDefault();
-  //   over = event.currentTarget.id;
-  // }
-  // function dragEnd(event) {
-  //   event.preventDefault();
-  //   if (from && over) {
-  //     const from_index = $components.findIndex(
-  //       component => component.name === from
-  //     );
-  //     const to_index = $components.findIndex(
-  //       component => component.name === over
-  //     );
-  //     const from_component = $components[from_index];
-  //     $components.splice(from_index, 1);
-  //     components.set(
-  //       $components
-  //         .slice(0, to_index)
-  //         .concat(from_component)
-  //         .concat($components.slice(to_index))
-  //     );
-  //   }
-  //   from = over = null;
-  // }
-  // function focus(node) {
-  //   node.select();
-  // }
+
   function addFolder() {
     //console.log(children);
     let newFolder = {};
     newFolder.name = '';
     newFolder.type = 'directory';
-    newFolder.path = $currentPath
-      ? $currentPath + '/' + newFolder.name
-      : newFolder.name;
+    newFolder.path = '';
     newFolder.editing = true;
     newFolder.children = [];
     //children.unshift(newFolder);
@@ -153,6 +117,7 @@
     currentFolder.children
       ? currentFolder.children.push(newFolder)
       : $folders.push(newFolder);
+    $currentComponent = newFolder;
     $currentComponent.expanded = true;
     $folders = $folders;
   }
@@ -165,6 +130,7 @@
     newFile.editing = true;
     let currentFolder = $folders;
     let splitPath = $currentPath && $currentPath.split('/');
+    console.log($currentPath);
     while (splitPath.length > 0) {
       let searchName = splitPath.shift();
       currentFolder = currentFolder.children

@@ -11,7 +11,13 @@
     currentApp,
     projectName,
     chapterName,
+<<<<<<< HEAD
     chapters,
+=======
+    folders,
+    folderToComponents,
+    filesToTreeNodes,
+>>>>>>> d1e12c90581b119180b115cc94cf1146fca7e7e0
   } = getContext('Controls');
   let newchapterName = '';
 
@@ -34,10 +40,16 @@
   function selectNewApp() {
     if ($projectName !== 'Create New Project') {
       $currentApp = 'A';
-      $appA.components = $directories[$projectName][$chapterName]['app-a'];
+      $folders = filesToTreeNodes(
+        $directories[$projectName][$chapterName]['app-a'].folders
+      );
+      $appA.components = folderToComponents($folders);
+      repl.set($appA);
       if ($directories[$projectName][$chapterName]['app-b']) {
-        $appB = {};
-        $appB.components = $directories[$projectName][$chapterName]['app-b'];
+        let appBFolders = filesToTreeNodes(
+          $directories[$projectName][$chapterName]['app-b'].folders
+        );
+        $appB.components = folderToComponents(appBFolders);
       } else {
         $appB = { ...$blankApp };
       }

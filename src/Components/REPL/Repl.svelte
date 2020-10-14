@@ -23,7 +23,7 @@
   export let injectedCSS = '';
   export let htmlContent = '';
 
-  const { showMarkdownPreview, folders } = getContext('Controls');
+  const { showMarkdownPreview, folders, updateApps } = getContext('Controls');
 
   const historyMap = new Map();
 
@@ -179,15 +179,25 @@
         return component;
       });
       $components = folderToComponents($folders);
+      updateApps($components);
 
       // recompile selected component
       output.update($selected, $compile_options);
 
       rebundle();
 
-      dispatch('change', {
-        components: $components,
-      });
+      // dispatch('change', {
+      //   components: $components,
+      // });
+    },
+
+    handle_file_delete: event => {
+      $components = folderToComponents($folders);
+
+      // recompile selected component
+      output.update($components[0], $compile_options);
+
+      rebundle();
     },
 
     register_module_editor(editor) {

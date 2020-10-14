@@ -5,6 +5,7 @@
   import directoriesJSON from './directories.json';
   import folderToComponents from '../utils/folderToComponents';
   import filesToTreeNodes from '../utils/filesToTreeNodes';
+  import componentsToFolder from '../utils/componentsToFolder';
 
   import marked from 'marked';
 
@@ -42,7 +43,6 @@
 
   import { readable, writable } from 'svelte/store';
   import { setContext, onMount } from 'svelte';
-  import componentsToFolder from '../utils/componentsToFolder';
   let repl;
   let markdownContent = '';
   $: htmlContent = marked(markdownContent);
@@ -51,19 +51,7 @@
       {
         name: 'App',
         type: 'svelte',
-        source:
-          `<script>import Display from './components/Display/Display.svelte'</` +
-          `script> <Display />`,
-      },
-      {
-        name: 'components/Display/Display',
-        type: 'svelte',
-        source: 'Hello',
-      },
-      {
-        name: 'components/Display/Screen/Next',
-        type: 'svelte',
-        source: 'Hello',
+        source: ``,
       },
     ],
     selectedComponent: 'App.svelte',
@@ -82,6 +70,14 @@
   const folders = writable([]);
   const currentComponent = writable('');
 
+  function updateApps(components) {
+    if ($currentApp === 'A') {
+      $appA.components = components;
+    } else {
+      $appB.components = components;
+    }
+  }
+
   setContext('Controls', {
     appA,
     appB,
@@ -98,6 +94,8 @@
     folderToComponents,
     filesToTreeNodes,
     currentComponent,
+    componentsToFolder,
+    updateApps,
   });
 
   onMount(function mount() {
@@ -116,7 +114,6 @@
     $folders = filesToTreeNodes(
       $directories[$projectName][$chapterName]['app-a']
     );
-
     $appA.components = folderToComponents($folders);
     repl.set($appA);
   }
