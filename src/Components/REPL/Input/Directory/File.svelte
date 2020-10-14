@@ -76,7 +76,7 @@
       currentFolder.splice(fileIndex, 1);
     }
     $folders = $folders;
-    handle_file_delete();
+    handle_file_delete(fileIndex);
   }
 
   function edit() {

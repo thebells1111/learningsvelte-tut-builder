@@ -23,7 +23,12 @@
   export let injectedCSS = '';
   export let htmlContent = '';
 
-  const { showMarkdownPreview, folders, updateApps } = getContext('Controls');
+  const {
+    showMarkdownPreview,
+    folders,
+    updateApps,
+    currentComponent,
+  } = getContext('Controls');
 
   const historyMap = new Map();
 
@@ -191,13 +196,19 @@
       // });
     },
 
-    handle_file_delete: event => {
+    handle_file_delete: fileIndex => {
+      console.log(fileIndex);
       $components = folderToComponents($folders);
 
       // recompile selected component
       output.update($components[0], $compile_options);
 
       rebundle();
+
+      if (fileIndex >= $components.length) {
+        $currentComponent = $folders[$components.length - 1];
+        repl.handle_select($currentComponent);
+      }
     },
 
     register_module_editor(editor) {
