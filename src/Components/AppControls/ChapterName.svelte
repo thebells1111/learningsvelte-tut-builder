@@ -11,13 +11,10 @@
     currentApp,
     projectName,
     chapterName,
-<<<<<<< HEAD
     chapters,
-=======
     folders,
     folderToComponents,
     filesToTreeNodes,
->>>>>>> d1e12c90581b119180b115cc94cf1146fca7e7e0
   } = getContext('Controls');
   let newchapterName = '';
 
