@@ -14,6 +14,7 @@
     chapterName,
     chapters,
     folders,
+    folderToComponents,
   } = getContext('Controls');
   let newProjectName;
 
@@ -21,22 +22,23 @@
     $directories[newProjectName] = {};
     $directories[newProjectName].meta = '';
     $directories[newProjectName]['01-intro'] = {};
-    $directories[newProjectName]['01-intro']['app-a'] = [
-      ...$blankApp.components,
+    let newApp = [
+      {
+        webkitRelativePath: 'App.svelte',
+        source: '',
+        path: 'projects',
+      },
     ];
-    $directories[newProjectName]['01-intro']['app-b'] = [
-      ...$blankApp.components,
-    ];
+    $directories[newProjectName]['01-intro']['app-a'] = [...newApp];
+    $directories[newProjectName]['01-intro']['app-b'] = [...newApp];
 
-    $directories[newProjectName]['01-intro'].text = {
-      name: 'text',
-      type: 'md',
-      source: '',
-    };
+    $directories[newProjectName]['01-intro'].text = '';
+    $directories[newProjectName].chapterNames = ['01-intro'];
+    console.log($directories[newProjectName]);
 
     $projectName = newProjectName;
     $chapterName = '01-intro';
-    $projects = $projects.push($projectName);
+    $projects = $projects.concat($projectName);
     selectNewApp();
   }
 
@@ -54,27 +56,25 @@
   function focus(node) {
     node.focus();
   }
-
-  function enter() {
-    return function(node, callback) {
-      node.addEventListener('keydown', handleKeydown);
-
-      function handleKeydown(event) {
-        if (event.keyCode === 13) {
-          callback.call(this, event);
-        }
+  function handleEnter(node) {
+    function enter(e) {
+      if (e.keyCode === 13) {
+        e.preventDefault();
+        e.target.blur();
       }
+    }
 
-      return {
-        destroy() {
-          node.removeEventListener('keydown', handleKeydown);
-        },
-      };
+    node.addEventListener('keydown', enter);
+    return {
+      destroy() {
+        node.removeEventListener('keydown', enter);
+      },
     };
   }
 
   function selectNewApp() {
     if ($projectName !== 'Create New Project') {
+      console.log($directories[$projectName]);
       $chapters = $directories[$projectName].chapterNames;
       $chapterName = $chapters[0];
       $currentApp = 'A';
@@ -84,15 +84,17 @@
       } else {
         $appB = { ...$blankApp };
       }
+      console.log($directories[$projectName][$chapterName]);
       $mde.value($directories[$projectName][$chapterName].text);
+
+      $folders = filesToTreeNodes(
+        $directories[$projectName][$chapterName]['app-a']
+      );
+
+      $appA.components = folderToComponents($folders);
+      repl.set($appA);
+      repl.set($appA);
     }
-
-    $folders = filesToTreeNodes(
-      $directories[$projectName][$chapterName]['app-a'].folders
-    );
-
-    $appA.components = convertToComponent($folders);
-    repl.set($appA);
   }
 
   function convertToComponent(file) {
@@ -200,7 +202,7 @@
     bind:value={newProjectName}
     on:focus={enterNewProject}
     on:blur={createNewProject}
-    use:enter={e => e.target.blur()}
+    use:handleEnter
     use:focus
   />
 {/if}

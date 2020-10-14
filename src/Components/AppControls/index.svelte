@@ -28,7 +28,6 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.6rem var(--side-nav);
-    background-color: var(--second);
     color: black;
     white-space: nowrap;
     flex: 0;

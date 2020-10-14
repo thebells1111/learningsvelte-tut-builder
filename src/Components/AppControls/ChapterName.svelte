@@ -11,29 +11,23 @@
     currentApp,
     projectName,
     chapterName,
+    chapters,
   } = getContext('Controls');
   let newchapterName = '';
 
-  $: chapters =
-    $projectName !== 'Create New Project'
-      ? Object.keys($directories[$projectName]).sort()
-      : '';
-
-  function enter() {
-    return function(node, callback) {
-      node.addEventListener('keydown', handleKeydown);
-
-      function handleKeydown(event) {
-        if (event.keyCode === 13) {
-          callback.call(this, event);
-        }
+  function handleEnter(node) {
+    function enter(e) {
+      if (e.keyCode === 13) {
+        e.preventDefault();
+        e.target.blur();
       }
+    }
 
-      return {
-        destroy() {
-          node.removeEventListener('keydown', handleKeydown);
-        },
-      };
+    node.addEventListener('keydown', enter);
+    return {
+      destroy() {
+        node.removeEventListener('keydown', enter);
+      },
     };
   }
 
@@ -48,14 +42,14 @@
         $appB = { ...$blankApp };
       }
       $mde.value($directories[$projectName][$chapterName].text);
-      //repl.set($appA);
+      repl.set($appA);
     }
   }
 </script>
 
 {#if $chapterName}
   <select bind:value={$chapterName} on:change={selectNewApp}>
-    {#each chapters as chapter}
+    {#each $chapters as chapter}
       <option value={chapter}>{chapter}</option>
     {/each}
     <option value="" />
@@ -64,6 +58,6 @@
   <input
     bind:value={$chapterName}
     on:focus={e => e.target.select()}
-    use:enter={e => e.target.blur()}
+    use:handleEnter
   />
 {/if}

@@ -94,13 +94,14 @@
     projects,
     chapters,
     folders,
+    folderToComponents,
   });
 
   onMount(function mount() {
     if (repl && $mde) {
       initializeApp();
       //$folders = componentsToFolder($appA.components);
-      repl.set($appA);
+      //repl.set($appA);
     } else {
       setTimeout(mount, 1);
     }
@@ -110,7 +111,7 @@
     $mde.value($directories[$projectName][$chapterName].text);
 
     $folders = filesToTreeNodes(
-      $directories[$projectName][$chapterName]['app-a'].folders
+      $directories[$projectName][$chapterName]['app-a']
     );
 
     $appA.components = folderToComponents($folders);

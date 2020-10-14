@@ -11,6 +11,7 @@
       fileList.push(f);
     }
     let x = fileListToFolder(fileList);
+
     console.log(x);
   }
 
@@ -36,13 +37,12 @@
       }
       if (app) {
         if (app !== `text.md`) {
-          folder[project][chapter][app] = folder[project][chapter][app] || {
-            folders: [],
-          };
+          folder[project][chapter][app] = folder[project][chapter][app] || [];
 
-          folder[project][chapter][app].folders.push({
+          folder[project][chapter][app].push({
             webkitRelativePath: directories.join('/'),
             source: file.source,
+            path: relativePath,
           });
         } else {
           folder[project][chapter].text = file.source; //change this to actual text.md
