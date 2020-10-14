@@ -5,8 +5,7 @@
   import JsonIcon from './icons/JsonIcon.svelte';
   import JavaScriptIcon from './icons/JavaScriptIcon.svelte';
   import FileIcon from './icons/FileIcon.svelte';
-  import { append } from 'svelte/internal';
-  const { currentComponent, selectFile } = getContext('Directory');
+  const { currentComponent, selectFile, showMenu } = getContext('Directory');
   const { folders } = getContext('Controls');
   const { handle_file_delete } = getContext('REPL');
   export let paddingLevel = 1;
@@ -96,28 +95,6 @@
     }
   }
 
-  function contextMenu(e) {
-    e.preventDefault();
-    console.log(e.y);
-    const newDiv = document.createElement('div');
-
-    // and give it some content
-    const newContent = document.createTextNode('Hi there and greetings!');
-    let style = newDiv.style;
-    style.position = 'absolute';
-    style.backgroundColor = 'white';
-    style.border = '1px solid black';
-    style.padding = '1em';
-    style.top = e.y + 'px';
-    style.left = e.x + 'px';
-    style.zIndex = 99;
-
-    // add the text node to the newly created div
-    newDiv.appendChild(newContent);
-
-    document.body.append(newDiv);
-  }
-
   function handleEnter(node) {
     function enter(e) {
       if (e.keyCode === 13) {
@@ -133,6 +110,11 @@
       },
     };
   }
+
+  function handleContextMenu(e) {
+    e.preventDefault();
+    $showMenu = true;
+  }
 </script>
 
 <file
@@ -140,7 +122,7 @@
   class:active-component={$currentComponent === component}
   on:click={handleClick}
   on:dblclick={edit}
-  on:contextmenu={contextMenu}
+  on:contextmenu={handleContextMenu}
 >
   <div>
     <svelte:component this={icons[component.type] || icons.file} />

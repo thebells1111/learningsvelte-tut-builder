@@ -6,8 +6,14 @@
   const { selected } = getContext('REPL');
   const { folders, currentComponent } = getContext('Controls');
 
+  let contextMenu;
+
   const currentPath = writable('');
   const editingFileName = writable(false);
+  const showMenu = writable(false);
+  $: if ($showMenu) {
+    contextMenu.focus();
+  }
 
   function selectComponent(component) {
     if ($selected !== component) {
@@ -28,74 +34,8 @@
     editingFileName,
     selectFile,
     handle_select,
+    showMenu,
   });
-
-  //let editing = null;
-  // function editTab(component) {
-  //   if ($selected === component) {
-  //     editing = $selected;
-  //   }
-  // }
-  // function closeEdit() {
-  //   const match = /(.+)\.(svelte|js|json|md)$/.exec($selected.name);
-  //   $selected.name = match ? match[1] : $selected.name;
-  //   if (isComponentNameUsed($selected)) {
-  //     let i = 1;
-  //     let name = $selected.name;
-  //     do {
-  //       $selected.name = `${name}_${i++}`;
-  //     } while (isComponentNameUsed($selected));
-  //   }
-  //   if (match && match[2]) $selected.type = match[2];
-  //   editing = null;
-  //   // re-select, in case the type changed
-  //   handle_select($selected);
-  //   components = components; // TODO necessary?
-  //   // focus the editor, but wait a beat (so key events aren't misdirected)
-  //   setTimeout(request_focus);
-  //   rebundle();
-  // }
-  // function remove(component) {
-  //   let result = confirm(
-  //     `Are you sure you want to delete ${component.name}.${component.type}?`
-  //   );
-  //   if (result) {
-  //     const index = $components.indexOf(component);
-  //     if (~index) {
-  //       components.set(
-  //         $components.slice(0, index).concat($components.slice(index + 1))
-  //       );
-  //     } else {
-  //       console.error(`Could not find component! That's... odd`);
-  //     }
-  //     handle_select($components[index] || $components[$components.length - 1]);
-  //   }
-  // }
-  // function selectInput(event) {
-  //   setTimeout(() => {
-  //     event.target.select();
-  //   }, 0);
-  // }
-  // let uid = 1;
-  // function addNew() {
-  //   const component = {
-  //     name: uid++ ? `Component${uid}` : 'Component1',
-  //     type: 'svelte',
-  //     source: '',
-  //   };
-  //   editing = component;
-  //   setTimeout(() => {
-  //     // TODO we can do this without IDs
-  //     document.getElementById(component.name).scrollIntoView(false);
-  //   });
-  //   components.update(components => components.concat(component));
-  //   handle_select(component);
-  // }
-  // function isComponentNameUsed(editing) {
-  //   return $components.find(
-  //     component => component !== editing && component.name === editing.name
-  //   );
-  // }
 
   function addFolder() {
     //console.log(children);
@@ -145,9 +85,14 @@
     $currentComponent.expanded = true;
     $folders = $folders;
   }
+
+  function handleClick(e) {
+    console.log(e.target);
+    $showMenu = false;
+  }
 </script>
 
-<div class:editing={editingFileName}>
+<div class:editing={editingFileName} on:click={handleClick}>
   <button class="add-folder" on:click={addFolder} />
   <button class="add-file" on:click={addFile} />
   <Folder
@@ -155,6 +100,17 @@
     isFirst={true}
     {selectComponent}
   />
+
+  <nav
+    class:show-menu={$showMenu}
+    bind:this={contextMenu}
+    on:blur={() => ($showMenu = false)}
+  >
+    <ul>
+      <li>Rename</li>
+      <li>Delete</li>
+    </ul>
+  </nav>
 </div>
 
 <style>
@@ -178,5 +134,13 @@
 
   .add-file {
     background-image: url(/icons/new-file.svg);
+  }
+
+  nav {
+    position: absolute;
+    display: none;
+  }
+  .show-menu {
+    display: block;
   }
 </style>
