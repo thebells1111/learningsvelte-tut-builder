@@ -94,7 +94,7 @@
 
       $appA.components = folderToComponents($folders);
       repl.set($appA);
-      $currentComponent = $currentComponent || $folders[0];
+      $currentComponent = $folders[0];
       repl.handle_select($currentComponent);
       repl.focus();
     }
