@@ -205,6 +205,10 @@
     },
   });
 
+  export function focus() {
+    module_editor.focus();
+  }
+
   export function handle_select(component) {
     console.log(component);
     historyMap.set(get_component_name($selected), module_editor.getHistory());

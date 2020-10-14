@@ -4,10 +4,9 @@
   import { writable } from 'svelte/store';
   export let handle_select;
   const { selected } = getContext('REPL');
-  const { folders } = getContext('Controls');
+  const { folders, currentComponent } = getContext('Controls');
 
   const currentPath = writable('');
-  const currentComponent = writable('');
   const editingFileName = writable(false);
 
   function selectComponent(component) {

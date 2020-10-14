@@ -80,6 +80,7 @@
   const projects = writable(directoriesJSON.projectNames);
   const chapters = writable(directoriesJSON[$projectName].chapterNames);
   const folders = writable([]);
+  const currentComponent = writable('');
 
   setContext('Controls', {
     appA,
@@ -95,6 +96,8 @@
     chapters,
     folders,
     folderToComponents,
+    filesToTreeNodes,
+    currentComponent,
   });
 
   onMount(function mount() {
