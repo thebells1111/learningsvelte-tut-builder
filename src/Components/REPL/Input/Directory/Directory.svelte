@@ -3,8 +3,8 @@
   import { getContext, setContext } from 'svelte';
   import { writable } from 'svelte/store';
   export let handle_select;
-  const { selected } = getContext('REPL');
   const { folders, currentComponent } = getContext('Controls');
+  const { handle_file_delete, selected } = getContext('REPL');
 
   const currentPath = writable('');
   const editingFileName = writable(false);
@@ -36,6 +36,8 @@
     handle_select,
     showMenu,
     contextMenu,
+    folders,
+    handle_file_delete,
   });
 
   function addFolder() {
@@ -88,11 +90,22 @@
   }
 
   function handleClick(e) {
-    $showMenu = false;
+    let fileNode = e.target;
+    let show = false;
+    while (fileNode.nodeName !== 'HTML') {
+      if (fileNode.nodeName === 'FILE') {
+        show = true;
+        break;
+      }
+      fileNode = fileNode.parentElement;
+    }
+    $showMenu = show;
   }
 </script>
 
-<div class:editing={editingFileName} on:click={handleClick}>
+<svelte:window on:click={handleClick} on:contextmenu={handleClick} />
+
+<div class:editing={editingFileName}>
   <button class="add-folder" on:click={addFolder} />
   <button class="add-file" on:click={addFile} />
   <Folder
@@ -139,7 +152,6 @@
   nav {
     position: absolute;
     display: none;
-    width: 300px;
     top: 0;
     background: white;
     z-index: 99;
@@ -149,11 +161,18 @@
     display: block;
   }
 
+  ul {
+    padding: 0;
+    margin: 0;
+  }
+
   li {
     list-style-type: none;
+    padding: 0 0.5em;
   }
 
   li:hover {
-    background-color: teal;
+    background-color: rgb(0, 90, 192);
+    color: white;
   }
 </style>

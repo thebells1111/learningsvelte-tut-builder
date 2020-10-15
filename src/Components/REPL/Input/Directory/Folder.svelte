@@ -1,8 +1,7 @@
 <script>
   import File from './File.svelte';
   import { onMount, getContext } from 'svelte';
-  const { folders } = getContext('Controls');
-  const { currentPath, currentComponent } = getContext('Directory');
+  const { currentPath, currentComponent, folders } = getContext('Directory');
   export let component;
   export let isFirst = false;
   export let selectComponent;

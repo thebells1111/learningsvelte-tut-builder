@@ -5,11 +5,14 @@
   import JsonIcon from './icons/JsonIcon.svelte';
   import JavaScriptIcon from './icons/JavaScriptIcon.svelte';
   import FileIcon from './icons/FileIcon.svelte';
-  const { currentComponent, selectFile, showMenu, contextMenu } = getContext(
-    'Directory'
-  );
-  const { folders } = getContext('Controls');
-  const { handle_file_delete } = getContext('REPL');
+  const {
+    currentComponent,
+    selectFile,
+    showMenu,
+    contextMenu,
+    folders,
+    handle_file_delete,
+  } = getContext('Directory');
   export let paddingLevel = 1;
 
   let newName = component.name ? `${component.name}.${component.type}` : '';
@@ -121,13 +124,11 @@
       fileNode = fileNode.parentElement;
     }
     let containerNode = fileNode.parentElement.parentElement.parentElement;
-    console.log(containerNode);
-    // var bounds = node.getBoundingClientRect();
-    // console.log(bounds);
-    // var x = e.clientX - bounds.left;
-    // var y = e.clientY - bounds.top;
-    // $contextMenu.style.top = y + 'px';
-    // $contextMenu.style.left = x + 'px';
+    let containerBounds = containerNode.getBoundingClientRect();
+    var x = e.clientX - containerBounds.left;
+    var y = e.clientY - containerBounds.top;
+    $contextMenu.style.top = y + 'px';
+    $contextMenu.style.left = x + 'px';
   }
 </script>
 
