@@ -6,13 +6,13 @@
   const { selected } = getContext('REPL');
   const { folders, currentComponent } = getContext('Controls');
 
-  let contextMenu;
-
   const currentPath = writable('');
   const editingFileName = writable(false);
   const showMenu = writable(false);
+  const contextMenu = writable();
+
   $: if ($showMenu) {
-    contextMenu.focus();
+    $contextMenu.focus();
   }
 
   function selectComponent(component) {
@@ -35,6 +35,7 @@
     selectFile,
     handle_select,
     showMenu,
+    contextMenu,
   });
 
   function addFolder() {
@@ -87,7 +88,6 @@
   }
 
   function handleClick(e) {
-    console.log(e.target);
     $showMenu = false;
   }
 </script>
@@ -103,7 +103,7 @@
 
   <nav
     class:show-menu={$showMenu}
-    bind:this={contextMenu}
+    bind:this={$contextMenu}
     on:blur={() => ($showMenu = false)}
   >
     <ul>
@@ -139,8 +139,21 @@
   nav {
     position: absolute;
     display: none;
+    width: 300px;
+    top: 0;
+    background: white;
+    z-index: 99;
+    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
   }
   .show-menu {
     display: block;
+  }
+
+  li {
+    list-style-type: none;
+  }
+
+  li:hover {
+    background-color: teal;
   }
 </style>

@@ -134,13 +134,11 @@
 
 <style>
   .container {
-    position: relative;
     width: 100%;
     height: 100%;
   }
 
   .pane {
-    position: relative;
     float: left;
     width: 100%;
     height: 100%;
