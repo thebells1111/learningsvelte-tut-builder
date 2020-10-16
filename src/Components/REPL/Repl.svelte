@@ -108,8 +108,6 @@
     throw new Error(`You must supply workersUrl prop to <Repl>`);
   }
 
-  const dispatch = createEventDispatcher();
-
   const components = writable([]);
   const selected = writable(null);
   const bundle = writable(null);
@@ -197,7 +195,6 @@
     },
 
     handle_file_delete: fileIndex => {
-      console.log(fileIndex);
       $components = folderToComponents($folders);
 
       // recompile selected component
@@ -207,8 +204,15 @@
 
       if (fileIndex >= $components.length) {
         $currentComponent = $folders[$components.length - 1];
-        repl.handle_select($currentComponent);
+        handle_select($currentComponent);
       }
+    },
+
+    handle_rename: () => {
+      $components = folderToComponents($folders); // recompile selected component
+      output.update($components[0], $compile_options);
+
+      rebundle();
     },
 
     register_module_editor(editor) {
@@ -231,7 +235,6 @@
   }
 
   export function handle_select(component) {
-    console.log(component);
     historyMap.set(get_component_name($selected), module_editor.getHistory());
     selected.set(component);
     module_editor.set(component.source, component.type);

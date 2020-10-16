@@ -4,12 +4,14 @@
   import { writable } from 'svelte/store';
   export let handle_select;
   const { folders, currentComponent } = getContext('Controls');
-  const { handle_file_delete, selected } = getContext('REPL');
+  const { handle_file_delete, selected, handle_rename } = getContext('REPL');
 
   const currentPath = writable('');
   const editingFileName = writable(false);
   const showMenu = writable(false);
   const contextMenu = writable();
+  const contextMenuComponent = writable();
+  const handleComponentRename = handle_rename;
 
   $: if ($showMenu) {
     $contextMenu.focus();
@@ -26,19 +28,6 @@
     $currentComponent = component;
     selectComponent(component);
   }
-
-  setContext('Directory', {
-    currentPath,
-    currentComponent,
-    selectComponent,
-    editingFileName,
-    selectFile,
-    handle_select,
-    showMenu,
-    contextMenu,
-    folders,
-    handle_file_delete,
-  });
 
   function addFolder() {
     //console.log(children);
@@ -73,7 +62,6 @@
     newFile.editing = true;
     let currentFolder = $folders;
     let splitPath = $currentPath && $currentPath.split('/');
-    console.log($currentPath);
     while (splitPath.length > 0) {
       let searchName = splitPath.shift();
       currentFolder = currentFolder.children
@@ -86,6 +74,7 @@
       $folders.push(newFile);
     }
     $currentComponent.expanded = true;
+    $contextMenuComponent = newFile;
     $folders = $folders;
   }
 
@@ -93,7 +82,16 @@
     let fileNode = e.target;
     let show = false;
     while (fileNode.nodeName !== 'HTML') {
-      if (fileNode.nodeName === 'FILE') {
+      if (
+        fileNode.nodeName === 'FILE' &&
+        fileNode.innerText !== ' App.svelte'
+      ) {
+        let containerNode = fileNode.parentElement.parentElement.parentElement;
+        let containerBounds = containerNode.getBoundingClientRect();
+        var x = e.clientX - containerBounds.left;
+        var y = e.clientY - containerBounds.top;
+        $contextMenu.style.top = y + 'px';
+        $contextMenu.style.left = x + 'px';
         show = true;
         break;
       }
@@ -101,9 +99,79 @@
     }
     $showMenu = show;
   }
+
+  function handleDelete() {
+    let result = confirm(
+      `Are you sure you want to delete ${$contextMenuComponent.name}.${$contextMenuComponent.type}?`
+    );
+    if (result) {
+      deleteFile();
+    }
+  }
+
+  function deleteFile() {
+    let currentFolder = $folders;
+    let splitPath = $contextMenuComponent.path.split('/');
+    while (splitPath.length > 0) {
+      let searchName = splitPath.shift();
+      if (currentFolder.children) {
+        currentFolder = currentFolder.children.find(
+          ({ name, type }) => name === searchName && type === 'directory'
+        );
+      } else {
+        currentFolder.find(
+          ({ name, type }) => name === searchName && type === 'directory'
+        );
+      }
+    }
+
+    let fileIndex;
+    if (currentFolder.children && currentFolder.children.length > 0) {
+      fileIndex = currentFolder.children.findIndex(
+        ({ name }) => name === $contextMenuComponent.name
+      );
+    } else {
+      fileIndex = currentFolder.findIndex(
+        ({ name }) => name === $contextMenuComponent.name
+      );
+    }
+
+    if (currentFolder.children) {
+      currentFolder.children.splice(fileIndex, 1);
+    } else {
+      currentFolder.splice(fileIndex, 1);
+    }
+    $folders = $folders;
+    handle_file_delete(fileIndex);
+  }
+
+  function handleRenameClick() {
+    $contextMenuComponent.editing = true;
+  }
+
+  setContext('Directory', {
+    currentPath,
+    currentComponent,
+    selectComponent,
+    editingFileName,
+    selectFile,
+    handle_select,
+    showMenu,
+    contextMenu,
+    folders,
+    handle_file_delete,
+    contextMenuComponent,
+    handleComponentRename,
+    deleteFile,
+  });
 </script>
 
-<svelte:window on:click={handleClick} on:contextmenu={handleClick} />
+<svelte:window
+  on:click={() => {
+    $showMenu = false;
+  }}
+  on:contextmenu={handleClick}
+/>
 
 <div class:editing={editingFileName}>
   <button class="add-folder" on:click={addFolder} />
@@ -120,8 +188,8 @@
     on:blur={() => ($showMenu = false)}
   >
     <ul>
-      <li>Rename</li>
-      <li>Delete</li>
+      <li on:click={handleRenameClick}>Rename</li>
+      <li on:click={handleDelete}>Delete</li>
     </ul>
   </nav>
 </div>

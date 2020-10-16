@@ -7,12 +7,13 @@
   import FileIcon from './icons/FileIcon.svelte';
   const {
     currentComponent,
+    contextMenuComponent,
     selectFile,
-    showMenu,
-    contextMenu,
     folders,
-    handle_file_delete,
+    handleComponentRename,
+    deleteFile,
   } = getContext('Directory');
+
   export let paddingLevel = 1;
 
   let newName = component.name ? `${component.name}.${component.type}` : '';
@@ -24,8 +25,10 @@
     file: FileIcon,
   };
 
-  function handleClick() {
-    selectFile(component);
+  function handleClick(e) {
+    if (e.target.nodeName !== 'INPUT') {
+      selectFile(component);
+    }
   }
 
   function focus(node) {
@@ -41,62 +44,16 @@
     if (name && type) {
       component.name = name;
       component.type = type;
+      handleComponentRename();
     } else if (!(component.name && component.type)) {
       deleteFile();
     }
-
-    $folders = $folders;
-  }
-
-  function deleteFile() {
-    let currentFolder = $folders;
-    let splitPath = component.path.split('/');
-    while (splitPath.length > 0) {
-      let searchName = splitPath.shift();
-      if (currentFolder.children) {
-        currentFolder = currentFolder.children.find(
-          ({ name, type }) => name === searchName && type === 'directory'
-        );
-      } else {
-        currentFolder.find(
-          ({ name, type }) => name === searchName && type === 'directory'
-        );
-      }
-    }
-
-    let fileIndex;
-    if (currentFolder.children && currentFolder.children.length > 0) {
-      fileIndex = currentFolder.children.findIndex(
-        ({ name }) => name === component.name
-      );
-    } else {
-      fileIndex = currentFolder.findIndex(
-        ({ name }) => name === component.name
-      );
-    }
-
-    if (currentFolder.children) {
-      currentFolder.children.splice(fileIndex, 1);
-    } else {
-      currentFolder.splice(fileIndex, 1);
-    }
-    $folders = $folders;
-    handle_file_delete(fileIndex);
   }
 
   function edit() {
     let editName = `${component.name}.${component.type}`;
     if (editName !== 'App.svelte') {
       component.editing = true;
-    }
-  }
-
-  function handleDelete() {
-    let result = confirm(
-      `Are you sure you want to delete ${component.name}.${component.type}?`
-    );
-    if (result) {
-      deleteFile();
     }
   }
 
@@ -118,17 +75,9 @@
 
   function handleContextMenu(e) {
     e.preventDefault();
-    $showMenu = true;
-    let fileNode = e.target;
-    while (fileNode.nodeName !== 'FILE') {
-      fileNode = fileNode.parentElement;
+    if (!(component.name === 'App' && component.type === 'svelte')) {
+      $contextMenuComponent = component;
     }
-    let containerNode = fileNode.parentElement.parentElement.parentElement;
-    let containerBounds = containerNode.getBoundingClientRect();
-    var x = e.clientX - containerBounds.left;
-    var y = e.clientY - containerBounds.top;
-    $contextMenu.style.top = y + 'px';
-    $contextMenu.style.left = x + 'px';
   }
 </script>
 
@@ -142,9 +91,6 @@
   <div>
     <svelte:component this={icons[component.type] || icons.file} />
     <span>{component.name}.{component.type}</span>
-    {#if !(component.name === 'App' && component.type === 'svelte')}
-      <button on:click={() => handleDelete(component)}>x</button>
-    {/if}
     {#if component.editing}
       <input
         bind:value={newName}
