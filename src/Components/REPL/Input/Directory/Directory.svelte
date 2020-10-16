@@ -145,7 +145,9 @@
       currentFolder.splice(fileIndex, 1);
     }
     $folders = $folders;
-    handle_file_delete(fileIndex);
+    $currentPath = '';
+
+    handle_file_delete(fileIndex, $currentPath);
   }
 
   function handleRenameClick() {
@@ -195,6 +197,7 @@
       <li on:click={handleDelete}>Delete</li>
     </ul>
   </nav>
+
 </div>
 
 <style>

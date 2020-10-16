@@ -8,9 +8,9 @@ export default function filesToTreeNodes(arr) {
         name: splitpath[i],
         type: 'directory',
         path: obj.webkitRelativePath
-          .split('.')
+          .split('/')
           .slice(0, -1)
-          .join('.'),
+          .join('/'),
       };
       if (i == splitpath.length - 1) {
         let splitName = splitpath[i].split('.');

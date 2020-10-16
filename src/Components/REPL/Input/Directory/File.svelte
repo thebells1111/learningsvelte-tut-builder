@@ -66,7 +66,6 @@
   }
 
   function handleContextMenu(e) {
-    e.preventDefault();
     if (!(component.name === 'App' && component.type === 'svelte')) {
       $contextMenuComponent = component;
     }
@@ -74,7 +73,7 @@
 </script>
 
 <file
-  style="--padding-level: {0.05 + paddingLevel * 1}em"
+  style="--padding-level: {0.05 + paddingLevel * 1}em; --move-left: -{0.05 + paddingLevel * 1}em"
   class:active-component={$currentComponent === component}
   on:click={handleClick}
   on:contextmenu={handleContextMenu}
@@ -100,6 +99,9 @@
     padding-left: var(--padding-level);
     cursor: pointer;
     align-items: center;
+    position: relative;
+    left: var(--move-left);
+    width: calc(100% + var(--padding-level));
   }
 
   file:hover {
@@ -112,7 +114,6 @@
     white-space: nowrap;
     overflow-x: hidden;
     overflow-y: hidden;
-    border-left: 1px solid #eee;
     user-select: none;
   }
 

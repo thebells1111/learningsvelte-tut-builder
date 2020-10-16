@@ -104,7 +104,6 @@
   });
 
   function handleContextMenu(e) {
-    e.preventDefault();
     if (component.name !== 'src') {
       $contextMenuComponent = component;
     }
@@ -112,7 +111,7 @@
 </script>
 
 <folder
-  style="--padding-level: {0.05 + paddingLevel * 1}em"
+  style="--padding-level: {0.05 + paddingLevel * 1}em; --move-left: -{0.05 + paddingLevel * 1}em"
   class:active-component={$currentComponent === component}
   on:click={toggle}
   on:contextmenu={handleContextMenu}
@@ -131,7 +130,7 @@
 </folder>
 
 {#if component.expanded}
-  <ul>
+  <ul style="--padding-level: {0.05 + paddingLevel * 1}em">
     {#each component.children as childComponent}
       <li>
         {#if childComponent.type === 'directory'}
@@ -160,7 +159,6 @@
     background-position: 0.5em;
     font-weight: bold;
     width: 100%;
-    border-left: 1px solid #eee;
     position: relative;
     user-select: none;
   }
@@ -169,20 +167,13 @@
     display: block;
     padding-left: var(--padding-level);
     cursor: pointer;
+    position: relative;
+    left: var(--move-left);
+    width: calc(100% + var(--padding-level));
   }
 
   folder:hover {
     background-color: #e4e4e4;
-  }
-
-  ul {
-    padding: 0;
-    margin: 0;
-    list-style: none;
-  }
-
-  li {
-    height: 32px;
   }
 
   .active-component,
@@ -192,6 +183,16 @@
 
   .first-folder {
     border: none;
+  }
+
+  ul {
+    /* background-color: var(--color); */
+    margin: 0 0 0 1em;
+    border-left: 1px solid #eee;
+  }
+
+  li {
+    list-style-type: none;
   }
 
   input {
