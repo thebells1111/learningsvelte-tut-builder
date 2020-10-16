@@ -9,7 +9,6 @@
     currentComponent,
     contextMenuComponent,
     selectFile,
-    folders,
     handleComponentRename,
     deleteFile,
   } = getContext('Directory');
@@ -50,13 +49,6 @@
     }
   }
 
-  function edit() {
-    let editName = `${component.name}.${component.type}`;
-    if (editName !== 'App.svelte') {
-      component.editing = true;
-    }
-  }
-
   function handleEnter(node) {
     function enter(e) {
       if (e.keyCode === 13) {
@@ -85,7 +77,6 @@
   style="--padding-level: {0.05 + paddingLevel * 1}em"
   class:active-component={$currentComponent === component}
   on:click={handleClick}
-  on:dblclick={edit}
   on:contextmenu={handleContextMenu}
 >
   <div>
@@ -122,6 +113,7 @@
     overflow-x: hidden;
     overflow-y: hidden;
     border-left: 1px solid #eee;
+    user-select: none;
   }
 
   span {
@@ -132,12 +124,6 @@
   .active-component,
   file.active-component:hover {
     background-color: #b0dcf5;
-  }
-  button {
-    background-color: transparent;
-    border: none;
-    padding: 0 1em;
-    z-index: 99;
   }
 
   input {

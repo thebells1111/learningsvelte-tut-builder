@@ -1,7 +1,13 @@
 <script>
   import File from './File.svelte';
   import { onMount, getContext } from 'svelte';
-  const { currentPath, currentComponent, folders } = getContext('Directory');
+  const {
+    currentPath,
+    currentComponent,
+    folders,
+    contextMenuComponent,
+  } = getContext('Directory');
+
   export let component;
   export let isFirst = false;
   export let selectComponent;
@@ -96,13 +102,20 @@
       $currentComponent = component;
     }
   });
+
+  function handleContextMenu(e) {
+    e.preventDefault();
+    if (component.name !== 'src') {
+      $contextMenuComponent = component;
+    }
+  }
 </script>
 
 <folder
   style="--padding-level: {0.05 + paddingLevel * 1}em"
   class:active-component={$currentComponent === component}
   on:click={toggle}
-  on:dblclick={edit}
+  on:contextmenu={handleContextMenu}
 >
   <div style="--folder: {folder}" class:first-folder={isFirst}>
     {component.name}
@@ -149,6 +162,7 @@
     width: 100%;
     border-left: 1px solid #eee;
     position: relative;
+    user-select: none;
   }
 
   folder {

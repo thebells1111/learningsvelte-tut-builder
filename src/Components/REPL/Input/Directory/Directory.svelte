@@ -30,14 +30,12 @@
   }
 
   function addFolder() {
-    //console.log(children);
     let newFolder = {};
     newFolder.name = '';
     newFolder.type = 'directory';
     newFolder.path = '';
     newFolder.editing = true;
     newFolder.children = [];
-    //children.unshift(newFolder);
     let currentFolder = $folders;
     let splitPath = $currentPath && $currentPath.split('/');
     while (splitPath.length > 0) {
@@ -78,21 +76,26 @@
     $folders = $folders;
   }
 
-  function handleClick(e) {
+  function handleContextMenu(e) {
     let fileNode = e.target;
     let show = false;
     while (fileNode.nodeName !== 'HTML') {
-      if (
-        fileNode.nodeName === 'FILE' &&
-        fileNode.innerText !== ' App.svelte'
-      ) {
-        let containerNode = fileNode.parentElement.parentElement.parentElement;
-        let containerBounds = containerNode.getBoundingClientRect();
-        var x = e.clientX - containerBounds.left;
-        var y = e.clientY - containerBounds.top;
-        $contextMenu.style.top = y + 'px';
-        $contextMenu.style.left = x + 'px';
-        show = true;
+      if (fileNode.nodeName === 'FILE' || fileNode.nodeName === 'FOLDER') {
+        e.preventDefault();
+        if (
+          !(
+            fileNode.innerText === ' App.svelte' || fileNode.innerText === 'src'
+          )
+        ) {
+          let containerNode =
+            fileNode.parentElement.parentElement.parentElement;
+          let containerBounds = containerNode.getBoundingClientRect();
+          var x = e.clientX - containerBounds.left;
+          var y = e.clientY - containerBounds.top;
+          $contextMenu.style.top = y + 'px';
+          $contextMenu.style.left = x + 'px';
+          show = true;
+        }
         break;
       }
       fileNode = fileNode.parentElement;
@@ -170,7 +173,7 @@
   on:click={() => {
     $showMenu = false;
   }}
-  on:contextmenu={handleClick}
+  on:contextmenu={handleContextMenu}
 />
 
 <div class:editing={editingFileName}>
