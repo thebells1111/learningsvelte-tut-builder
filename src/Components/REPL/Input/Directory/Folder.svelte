@@ -52,7 +52,6 @@
   }
 
   function addFolder() {
-    let splitName = newName.split('.');
     component.editing = false;
     let name = newName;
     if (name) {
@@ -88,13 +87,6 @@
       currentFolder.splice(fileIndex, 1);
     }
     $folders = $folders;
-  }
-
-  function edit() {
-    let editName = `${component.name}`;
-    if (editName !== 'src') {
-      component.editing = true;
-    }
   }
 
   onMount(() => {

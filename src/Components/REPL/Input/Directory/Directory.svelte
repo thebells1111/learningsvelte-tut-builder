@@ -51,6 +51,7 @@
     $currentComponent.expanded = true;
     $folders = $folders;
   }
+
   function addFile() {
     let newFile = {};
     newFile.name = '';
@@ -104,16 +105,27 @@
   }
 
   function handleDelete() {
-    let result = confirm(
-      `Are you sure you want to delete ${$contextMenuComponent.name}.${$contextMenuComponent.type}?`
-    );
-    if (result) {
-      deleteFile();
+    console.log();
+    if ($contextMenuComponent.type !== 'directory') {
+      let result = confirm(
+        `Are you sure you want to delete ${$contextMenuComponent.name}.${$contextMenuComponent.type}?`
+      );
+      if (result) {
+        deleteFile();
+      }
+    } else {
+      let result = confirm(
+        `Are you sure you want to delete folder "${$contextMenuComponent.name}"?`
+      );
+      if (result) {
+        deleteFolder();
+      }
     }
   }
 
   function deleteFile() {
     let currentFolder = $folders;
+
     let splitPath = $contextMenuComponent.path.split('/');
     while (splitPath.length > 0) {
       let searchName = splitPath.shift();
@@ -122,7 +134,46 @@
           ({ name, type }) => name === searchName && type === 'directory'
         );
       } else {
-        currentFolder.find(
+        currentFolder = currentFolder.find(
+          ({ name, type }) => name === searchName && type === 'directory'
+        );
+      }
+    }
+
+    let fileIndex;
+    if (currentFolder.children && currentFolder.children.length > 0) {
+      fileIndex = currentFolder.children.findIndex(
+        ({ name }) => name === $contextMenuComponent.name
+      );
+    } else {
+      fileIndex = currentFolder.findIndex(
+        ({ name }) => name === $contextMenuComponent.name
+      );
+    }
+
+    if (currentFolder.children) {
+      currentFolder.children.splice(fileIndex, 1);
+    } else {
+      currentFolder.splice(fileIndex, 1);
+    }
+    $folders = $folders;
+    $currentPath = '';
+
+    handle_file_delete(fileIndex, $currentPath);
+  }
+
+  function deleteFolder() {
+    let currentFolder = $folders;
+
+    let splitPath = $contextMenuComponent.path.split('/');
+    while (splitPath.length > 0) {
+      let searchName = splitPath.shift();
+      if (currentFolder.children) {
+        currentFolder = currentFolder.children.find(
+          ({ name, type }) => name === searchName && type === 'directory'
+        );
+      } else {
+        currentFolder = currentFolder.find(
           ({ name, type }) => name === searchName && type === 'directory'
         );
       }
