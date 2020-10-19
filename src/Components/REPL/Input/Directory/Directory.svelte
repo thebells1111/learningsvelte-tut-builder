@@ -105,7 +105,6 @@
   }
 
   function handleDelete() {
-    console.log();
     if ($contextMenuComponent.type !== 'directory') {
       let result = confirm(
         `Are you sure you want to delete ${$contextMenuComponent.name}.${$contextMenuComponent.type}?`
@@ -127,7 +126,9 @@
     let currentFolder = $folders;
 
     let splitPath = $contextMenuComponent.path.split('/');
-    while (splitPath.length > 0) {
+    while (splitPath[0] && splitPath.length > 0) {
+      //splitPath[0] checks for empty path
+      console.log(currentFolder);
       let searchName = splitPath.shift();
       if (currentFolder.children) {
         currentFolder = currentFolder.children.find(
@@ -166,7 +167,7 @@
     let currentFolder = $folders;
 
     let splitPath = $contextMenuComponent.path.split('/');
-    while (splitPath.length > 0) {
+    while (splitPath.length > 1) {
       let searchName = splitPath.shift();
       if (currentFolder.children) {
         currentFolder = currentFolder.children.find(

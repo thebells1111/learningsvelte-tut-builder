@@ -116,9 +116,24 @@
     );
     $appA.components = folderToComponents($folders);
     repl.set($appA);
-    // $currentComponent = $folders[0];
-    // repl.handle_select($currentComponent);
-    // repl.focus();
+    $currentComponent = $folders[0];
+
+    let loadAttempts = 0;
+    function load() {
+      try {
+        repl.handle_select($currentComponent);
+        repl.focus();
+      } catch (err) {
+        if (loadAttempts < 100) {
+          loadAttempts++;
+          setTimeout(load, 100);
+        } else {
+          console.error('REPL Editor loading exceeded 10 second timeout');
+          console.error(err);
+        }
+      }
+    }
+    load();
   }
 </script>
 
