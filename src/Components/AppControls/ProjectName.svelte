@@ -102,6 +102,7 @@
 </script>
 
 {#if $projectName !== 'Create New Project'}
+  <!-- svelte-ignore a11y-no-onchange -->
   <select bind:value={$projectName} on:change={selectNewApp}>
     {#each $projects as project}
       <option value={project}>{project}</option>

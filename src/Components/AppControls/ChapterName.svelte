@@ -58,6 +58,7 @@
 </script>
 
 {#if $chapterName}
+  <!-- svelte-ignore a11y-no-onchange -->
   <select bind:value={$chapterName} on:change={selectNewApp}>
     {#each $chapters as chapter}
       <option value={chapter}>{chapter}</option>
