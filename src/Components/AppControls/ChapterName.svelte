@@ -38,14 +38,15 @@
     if ($projectName !== 'Create New Project') {
       $currentApp = 'A';
       $folders = filesToTreeNodes(
-        $directories[$projectName][$chapterName]['app-a'].folders
+        $directories[$projectName][$chapterName]['app-a']
       );
       $appA.components = folderToComponents($folders);
       repl.set($appA);
       if ($directories[$projectName][$chapterName]['app-b']) {
         let appBFolders = filesToTreeNodes(
-          $directories[$projectName][$chapterName]['app-b'].folders
+          $directories[$projectName][$chapterName]['app-b']
         );
+        $appB = {};
         $appB.components = folderToComponents(appBFolders);
       } else {
         $appB = { ...$blankApp };
