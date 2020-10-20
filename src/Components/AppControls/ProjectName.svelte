@@ -3,7 +3,6 @@
   export let repl;
 
   const {
-    blankApp,
     appA,
     appB,
     mde,
@@ -36,7 +35,6 @@
 
     $directories[newProjectName]['01-intro'].text = '';
     $directories[newProjectName].chapterNames = ['01-intro'];
-    console.log($directories[newProjectName]);
 
     $projectName = newProjectName;
     $chapterName = '01-intro';
@@ -52,7 +50,7 @@
     nextProjectNumber =
       nextProjectNumber < 10 ? '0' + nextProjectNumber : nextProjectNumber;
 
-    newProjectName = `${nextProjectNumber} - `;
+    newProjectName = `${nextProjectNumber}-`;
   }
 
   function focus(node) {

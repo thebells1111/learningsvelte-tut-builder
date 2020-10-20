@@ -16,7 +16,7 @@
     folderToComponents,
     filesToTreeNodes,
   } = getContext('Controls');
-  let newchapterName = '';
+  let newChapterName = '';
 
   function handleEnter(node) {
     function enter(e) {
@@ -35,13 +35,12 @@
   }
 
   function selectNewApp() {
-    if ($projectName !== 'Create New Project') {
+    if ($chapterName !== 'Create New Chapter') {
       $currentApp = 'A';
       $folders = filesToTreeNodes(
         $directories[$projectName][$chapterName]['app-a']
       );
       $appA.components = folderToComponents($folders);
-      repl.set($appA);
       if ($directories[$projectName][$chapterName]['app-b']) {
         let appBFolders = filesToTreeNodes(
           $directories[$projectName][$chapterName]['app-b']
@@ -55,20 +54,42 @@
       repl.set($appA);
     }
   }
+
+  function focus(node) {
+    node.focus();
+  }
+
+  function enterNewChapter() {
+    let chapterNumbers = $chapters.map(v => {
+      return parseInt(v);
+    });
+    let nextChapterNumber = chapterNumbers[chapterNumbers.length - 1] + 1;
+    nextChapterNumber =
+      nextChapterNumber < 10 ? '0' + nextChapterNumber : nextChapterNumber;
+
+    newChapterName = `${nextChapterNumber}-`;
+  }
+
+  function createNewChapter() {
+    $chapterName = newChapterName;
+    $chapters = $chapters.concat($chapterName);
+  }
 </script>
 
-{#if $chapterName}
+{#if $chapterName !== 'Create New Chapter'}
   <!-- svelte-ignore a11y-no-onchange -->
   <select bind:value={$chapterName} on:change={selectNewApp}>
     {#each $chapters as chapter}
       <option value={chapter}>{chapter}</option>
     {/each}
-    <option value="" />
+    <option value="Create New Chapter">Create New Chapter</option>
   </select>
 {:else}
   <input
-    bind:value={$chapterName}
-    on:focus={e => e.target.select()}
+    bind:value={newChapterName}
+    on:focus={enterNewChapter}
+    on:blur={createNewChapter}
     use:handleEnter
+    use:focus
   />
 {/if}
