@@ -1,5 +1,9 @@
 <script>
   import File from './File.svelte';
+  import FolderSvelteIcon from './icons/FolderSvelteIcon.svelte';
+  import FolderSvelteOpenIcon from './icons/FolderSvelteOpenIcon.svelte';
+  import FolderSrcIcon from './icons/FolderSrcIcon.svelte';
+  import FolderSrcOpenIcon from './icons/FolderSrcOpenIcon.svelte';
   import { onMount, getContext } from 'svelte';
   const {
     currentPath,
@@ -11,14 +15,20 @@
   export let component;
   export let isFirst = false;
   export let selectComponent;
-  let folderBase = 'svelte';
   export let paddingLevel = 1;
-  $: folder = component.expanded
-    ? `url(/icons/folder-${folderBase}-open.svg)`
-    : `url(/icons/folder-${folderBase}.svg)`;
+
+  let icons = {
+    folderSvelte: FolderSvelteIcon,
+    folderSvelteOpen: FolderSvelteOpenIcon,
+    folderSrc: FolderSrcIcon,
+    folderSrcOpen: FolderSrcOpenIcon,
+  };
+
+  $: folderIcon = `folder${component.name.charAt(0).toUpperCase() +
+    component.name.slice(1).toLowerCase()}${component.expanded ? 'Open' : ''}`;
+  //construct string to match icons object keys based on folder name
 
   if (isFirst) {
-    folderBase = 'src';
     paddingLevel = 0;
   }
 
@@ -108,8 +118,11 @@
   on:click={toggle}
   on:contextmenu={handleContextMenu}
 >
-  <div style="--folder: {folder}" class:first-folder={isFirst}>
-    {component.name}
+  <div class:first-folder={isFirst}>
+    <svelte:component
+      this={icons[folderIcon] || component.expanded ? icons.folderSvelteOpen : icons.folderSvelte}
+    />
+    <span>{component.name}</span>
     {#if component.editing}
       <input
         bind:value={newName}
@@ -144,14 +157,13 @@
 
 <style>
   div {
-    padding: 0 0 0 1.75em;
-    background: 0 0.1em no-repeat;
-    background-image: var(--folder);
-    background-size: 1em 1em;
-    background-position: 0.5em;
+    padding: 0 0 0 0.5em;
     font-weight: bold;
     width: 100%;
     position: relative;
+    white-space: nowrap;
+    overflow-x: hidden;
+    overflow-y: hidden;
     user-select: none;
   }
 
