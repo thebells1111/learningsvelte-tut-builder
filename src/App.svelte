@@ -2,7 +2,7 @@
   import AppControls from './Components/AppControls/';
   import MarkdownEditor from './Components/MarkdownEditor.svelte';
   import Repl from './components/Repl/Repl.svelte';
-  // import directoriesJSON from './directories.json';
+  //import directoriesJSON from './directories.json';
   import folderToComponents from '../utils/folderToComponents';
   import filesToTreeNodes from '../utils/filesToTreeNodes';
   import componentsToFolder from '../utils/componentsToFolder';

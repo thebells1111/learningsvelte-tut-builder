@@ -295,7 +295,7 @@
       </SplitPane>
     </section>
 
-    <section slot="b" style="height: 100%;">
+    <section class="output-viewer" slot="b" style="height: 100%;">
       <Output
         {svelteUrl}
         {workersUrl}
@@ -340,6 +340,18 @@
   .container :global(section) > :global(*):last-child {
     width: 100%;
     height: 100%;
+  }
+
+  .output-viewer {
+    position: relative;
+    padding: 42px 0 0 0;
+  }
+
+  .output-viewer > :global(*):first-child {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 42px;
   }
 
   .markdown-preview {

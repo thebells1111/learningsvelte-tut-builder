@@ -137,4 +137,13 @@
   }
 </script>
 
-<input type="file" webkitdirectory mozdirectory on:change={handleFileUpload} />
+<label>
+  Upload Folders
+  <input
+    type="file"
+    webkitdirectory
+    mozdirectory
+    on:change={handleFileUpload}
+    style="display: none;"
+  />
+</label>
