@@ -1,9 +1,14 @@
 <script>
   import { getContext } from 'svelte';
-  const { showMarkdownPreview } = getContext('Controls');
+  const { showMarkdownPreview, Prism } = getContext('Controls');
 </script>
 
-<button on:click={() => ($showMarkdownPreview = !$showMarkdownPreview)}>
+<button
+  on:click={() => {
+    $showMarkdownPreview = !$showMarkdownPreview;
+    Prism.highlightAll();
+  }}
+>
   {$showMarkdownPreview ? 'Code' : 'chapter'}
 </button>
 

@@ -10,6 +10,7 @@
     "mini-css-extract-plugin": "^0.6.0",
     "prettier": "^1.19.1",
     "prettier-plugin-svelte": "^0.7.0",
+    "prismjs": "^1.22.0",
     "serve": "^11.0.0",
     "simplemde": "^1.11.2",
     "split.js": "^1.6.2",

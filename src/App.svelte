@@ -6,6 +6,7 @@
   import folderToComponents from '../utils/folderToComponents';
   import filesToTreeNodes from '../utils/filesToTreeNodes';
   import componentsToFolder from '../utils/componentsToFolder';
+  import Prism from 'prismjs';
 
   import marked from 'marked';
 
@@ -13,6 +14,13 @@
 
   marked.setOptions({
     breaks: true,
+    highlight: function(code, lang) {
+      if (Prism.languages[lang]) {
+        return Prism.highlight(code, Prism.languages[lang], lang);
+      } else {
+        return code;
+      }
+    },
   });
 
   import Split from 'split.js';
@@ -47,7 +55,12 @@
   import { setContext, onMount } from 'svelte';
   let repl;
   let markdownContent = '';
-  $: htmlContent = marked(markdownContent);
+  let htmlContent = '';
+  $: {
+    htmlContent = marked(markdownContent);
+    setTimeout(Prism.highlightAll, 0);
+  }
+
   const blankApp = readable({
     components: [
       {
@@ -98,6 +111,7 @@
     currentComponent,
     componentsToFolder,
     updateApps,
+    Prism,
   });
 
   onMount(() => {
