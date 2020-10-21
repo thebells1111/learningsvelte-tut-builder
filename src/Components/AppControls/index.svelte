@@ -13,8 +13,8 @@
   <UploadProjects />
   <ProjectName {repl} />
   <ChapterName {repl} />
-  <PreviewToggleButton />
   <SelectAppButton {repl} />
+  <PreviewToggleButton />
   <DownloadButton />
 </div>
 

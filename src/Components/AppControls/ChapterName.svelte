@@ -106,20 +106,35 @@
   }
 </script>
 
-{#if $chapterName !== 'Create New Chapter'}
-  <!-- svelte-ignore a11y-no-onchange -->
-  <select bind:value={$chapterName} on:change={selectNewApp}>
-    {#each $chapters as chapter}
-      <option value={chapter}>{chapter}</option>
-    {/each}
-    <option value="Create New Chapter">Create New Chapter</option>
-  </select>
-{:else}
-  <input
-    bind:value={newChapterName}
-    on:focus={enterNewChapter}
-    on:blur={createNewChapter}
-    use:handleEnter
-    use:focus
-  />
-{/if}
+<div>
+  <div>Chapters</div>
+  {#if $chapterName !== 'Create New Chapter'}
+    <!-- svelte-ignore a11y-no-onchange -->
+    <select bind:value={$chapterName} on:change={selectNewApp}>
+      {#each $chapters as chapter}
+        <option value={chapter}>{chapter}</option>
+      {/each}
+      <option value="Create New Chapter">Create New Chapter</option>
+    </select>
+  {:else}
+    <input
+      bind:value={newChapterName}
+      on:focus={enterNewChapter}
+      on:blur={createNewChapter}
+      use:handleEnter
+      use:focus
+    />
+  {/if}
+</div>
+
+<style>
+  div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    font-size: 0.8em;
+    font-weight: 700;
+  }
+</style>

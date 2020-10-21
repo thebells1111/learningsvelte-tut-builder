@@ -99,24 +99,35 @@
   }
 </script>
 
-{#if $projectName !== 'Create New Project'}
-  <!-- svelte-ignore a11y-no-onchange -->
-  <select bind:value={$projectName} on:change={selectNewApp}>
-    {#each $projects as project}
-      <option value={project}>{project}</option>
-    {/each}
-    <option value="Create New Project">Create New Project</option>
-  </select>
-{:else}
-  <input
-    bind:value={newProjectName}
-    on:focus={enterNewProject}
-    on:blur={createNewProject}
-    use:handleEnter
-    use:focus
-  />
-{/if}
+<div>
+  <div>Projects</div>
+  {#if $projectName !== 'Create New Project'}
+    <!-- svelte-ignore a11y-no-onchange -->
+    <select bind:value={$projectName} on:change={selectNewApp}>
+      {#each $projects as project}
+        <option value={project}>{project}</option>
+      {/each}
+      <option value="Create New Project">Create New Project</option>
+    </select>
+  {:else}
+    <input
+      bind:value={newProjectName}
+      on:focus={enterNewProject}
+      on:blur={createNewProject}
+      use:handleEnter
+      use:focus
+    />
+  {/if}
+</div>
 
 <style>
-
+  div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    font-size: 0.8em;
+    font-weight: 700;
+  }
 </style>

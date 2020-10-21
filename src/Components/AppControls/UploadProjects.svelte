@@ -138,7 +138,7 @@
 </script>
 
 <label>
-  Upload Folders
+  <span>Upload Folders</span>
   <input
     type="file"
     webkitdirectory
@@ -147,3 +147,22 @@
     style="display: none;"
   />
 </label>
+
+<style>
+  label {
+    border: 1px solid black;
+    padding: 0.25em;
+    border-radius: var(--border-r);
+    position: relative;
+  }
+  label:hover {
+    background-color: #efefef;
+  }
+  label:active {
+    background-color: #d8d8d8;
+  }
+  span {
+    font-size: 0.8em;
+    font-weight: 700;
+  }
+</style>
