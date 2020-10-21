@@ -3,6 +3,7 @@
 </script>
 
 <svg
+  class="icon"
   clip-rule="evenodd"
   fill-rule="evenodd"
   stroke-linejoin="round"
@@ -58,3 +59,10 @@
     </g>
   </g>
 </svg>
+
+<style>
+  .icon {
+    position: relative;
+    display: inline-block;
+  }
+</style>

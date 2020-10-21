@@ -165,6 +165,7 @@
     overflow-x: hidden;
     overflow-y: hidden;
     user-select: none;
+    height: 32px;
   }
 
   folder {
@@ -214,5 +215,14 @@
     font-weight: bold;
     box-sizing: content-box;
     height: 32px;
+  }
+
+  :global(span) {
+    position: relative;
+    bottom: 3px;
+  }
+
+  :global(svg) {
+    top: 4px;
   }
 </style>
