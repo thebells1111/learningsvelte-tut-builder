@@ -2,12 +2,14 @@
   import AppControls from './Components/AppControls/';
   import MarkdownEditor from './Components/MarkdownEditor.svelte';
   import Repl from './components/Repl/Repl.svelte';
-  import directoriesJSON from './directories.json';
+  // import directoriesJSON from './directories.json';
   import folderToComponents from '../utils/folderToComponents';
   import filesToTreeNodes from '../utils/filesToTreeNodes';
   import componentsToFolder from '../utils/componentsToFolder';
 
   import marked from 'marked';
+
+  const importedDirectory = false; //change to true if using directories.json file
 
   marked.setOptions({
     breaks: true,
@@ -60,13 +62,13 @@
   const appA = writable({ ...$blankApp });
   const appB = writable({ ...$blankApp });
   const mde = writable(null);
-  const directories = writable(directoriesJSON);
+  const directories = writable({});
   const currentApp = writable('A');
   const showMarkdownPreview = writable(false);
   const projectName = writable('01-random_quote_machine');
   const chapterName = writable('01-intro');
-  const projects = writable(directoriesJSON.projectNames);
-  const chapters = writable(directoriesJSON[$projectName].chapterNames);
+  const projects = writable([]);
+  const chapters = writable([]);
   const folders = writable([]);
   const currentComponent = writable('');
 
@@ -98,14 +100,24 @@
     updateApps,
   });
 
-  onMount(function mount() {
-    if (repl && $mde) {
-      initializeApp();
-      //$folders = componentsToFolder($appA.components);
-      //repl.set($appA);
+  onMount(() => {
+    if (importedDirectory) {
+      localStorage.setItem('directories', JSON.stringify(directoriesJSON));
+      $directories = directoriesJSON;
     } else {
-      setTimeout(mount, 1);
+      $directories = JSON.parse(localStorage.getItem('directories'));
     }
+    $projects = $directories.projectNames;
+    $chapters = $directories[$projectName].chapterNames;
+
+    function mount() {
+      if (repl && $mde) {
+        initializeApp();
+      } else {
+        setTimeout(mount, 1);
+      }
+    }
+    mount();
   });
 
   function initializeApp() {
@@ -119,6 +131,7 @@
     $currentComponent = $folders[0];
 
     let loadAttempts = 0;
+    //waits up to 10secs for repl to fully load, before throwing error and moving on
     function load() {
       try {
         repl.handle_select($currentComponent);
