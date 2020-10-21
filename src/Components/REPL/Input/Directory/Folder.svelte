@@ -217,12 +217,12 @@
     height: 32px;
   }
 
-  :global(span) {
+  span {
     position: relative;
     bottom: 3px;
   }
 
-  :global(svg) {
+  :global(folder > div > svg) {
     top: 4px;
   }
 </style>

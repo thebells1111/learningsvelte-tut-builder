@@ -145,4 +145,13 @@
     color: red;
     background-color: transparent; */
   }
+
+  span {
+    position: relative;
+    bottom: 3px;
+  }
+
+  :global(file > div > svg) {
+    top: 4px;
+  }
 </style>

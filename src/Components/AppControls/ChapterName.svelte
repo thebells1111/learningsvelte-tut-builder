@@ -13,6 +13,7 @@
     chapterName,
     chapters,
     folders,
+    currentComponent,
     folderToComponents,
     filesToTreeNodes,
   } = getContext('Controls');
@@ -47,11 +48,12 @@
         );
         $appB = {};
         $appB.components = folderToComponents(appBFolders);
-      } else {
-        $appB = { ...$blankApp };
+        $mde.value($directories[$projectName][$chapterName].text);
+        repl.set($appA);
+        $currentComponent = $folders[0];
+        repl.handle_select($currentComponent);
+        repl.focus();
       }
-      $mde.value($directories[$projectName][$chapterName].text);
-      repl.set($appA);
     }
   }
 
@@ -71,8 +73,36 @@
   }
 
   function createNewChapter() {
+    $directories[$projectName][newChapterName] = {};
+    let previousChapter = [...$chapters].pop();
     $chapterName = newChapterName;
     $chapters = $chapters.concat($chapterName);
+
+    $directories[$projectName][$chapterName].text = '';
+
+    if ($directories[$projectName][previousChapter]['app-b']) {
+      $directories[$projectName][$chapterName]['app-a'] =
+        $directories[$projectName][previousChapter]['app-b'];
+    } else {
+      $directories[$projectName][$chapterName]['app-a'] =
+        $directories[$projectName][previousChapter]['app-a'];
+    }
+
+    $directories[$projectName][$chapterName]['app-b'] =
+      $directories[$projectName][$chapterName]['app-a'];
+
+    $currentApp = 'B';
+    $folders = filesToTreeNodes(
+      $directories[$projectName][$chapterName]['app-b']
+    );
+    $appA.components = folderToComponents($folders);
+    $appB = { ...$appA };
+
+    $mde.value($directories[$projectName][$chapterName].text);
+    repl.set($appB);
+    $currentComponent = $folders[0];
+    repl.handle_select($currentComponent);
+    repl.focus();
   }
 </script>
 
