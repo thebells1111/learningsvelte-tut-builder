@@ -55,11 +55,7 @@
   import { setContext, onMount } from 'svelte';
   let repl;
   let markdownContent = '';
-  let htmlContent = '';
-  $: {
-    htmlContent = marked(markdownContent);
-    setTimeout(Prism.highlightAll, 0);
-  }
+  $: htmlContent = marked(markdownContent);
 
   const blankApp = readable({
     components: [

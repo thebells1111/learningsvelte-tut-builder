@@ -362,6 +362,7 @@
     left: 1px;
     width: calc(100% - 1px) !important;
     display: none;
+    padding: 1em;
   }
 
   .show-markdown-preview {
