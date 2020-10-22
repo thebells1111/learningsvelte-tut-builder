@@ -120,6 +120,8 @@
     } else {
       $directories = JSON.parse(localStorage.getItem('directories'));
     }
+    $projectName = localStorage.getItem('currentProject') || $projectName;
+    $chapterName = localStorage.getItem('currentChapter') || $chapterName;
     $projects = $directories.projectNames;
     $chapters = $directories[$projectName].chapterNames;
 

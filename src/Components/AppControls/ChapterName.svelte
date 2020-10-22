@@ -53,6 +53,7 @@
         $currentComponent = $folders[0];
         repl.handle_select($currentComponent);
         repl.focus();
+        localStorage.setItem('currentChapter', $chapterName);
       }
     }
   }
@@ -103,6 +104,7 @@
     $currentComponent = $folders[0];
     repl.handle_select($currentComponent);
     repl.focus();
+    localStorage.setItem('currentChapter', $chapterName);
   }
 </script>
 

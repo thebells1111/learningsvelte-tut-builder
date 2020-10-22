@@ -9,7 +9,8 @@
     $unsavedState = false;
     console.log($directories);
     console.log($folders);
-    console.log(folderToComponent($folders));
+    //console.log(folderToComponent($folders));
+    localStorage.setItem('directories', JSON.stringify($directories));
   }
 </script>
 
@@ -26,8 +27,6 @@
     position: relative;
     font-size: 0.8em;
     font-weight: 700;
-    width: 141px;
-    text-align: left;
   }
 
   button:disabled {

@@ -16,6 +16,7 @@
     folderToComponents,
     filesToTreeNodes,
     currentComponent,
+    unsavedState,
   } = getContext('Controls');
   let newProjectName;
 
@@ -39,6 +40,8 @@
     $projectName = newProjectName;
     $chapterName = '01-intro';
     $projects = $projects.concat($projectName);
+    $directories.projectNames = [...$projects];
+    $unsavedState = true;
     selectNewApp();
   }
 
@@ -95,6 +98,8 @@
       $currentComponent = $folders[0];
       repl.handle_select($currentComponent);
       repl.focus();
+      localStorage.setItem('currentProject', $projectName);
+      localStorage.setItem('currentChapter', $chapterName);
     }
   }
 </script>
