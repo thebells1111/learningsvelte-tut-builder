@@ -28,6 +28,7 @@
     folders,
     updateApps,
     currentComponent,
+    unsavedState,
   } = getContext('Controls');
 
   const historyMap = new Map();
@@ -172,6 +173,7 @@
     },
 
     handle_change: event => {
+      $unsavedState = true;
       selected.update(component => {
         // TODO this is a bit hacky — we're relying on mutability
         // so that updating components works... might be better
@@ -195,6 +197,7 @@
     },
 
     handle_file_delete: fileIndex => {
+      $unsavedState = true;
       $components = folderToComponents($folders);
 
       // recompile selected component
@@ -209,6 +212,7 @@
     },
 
     handle_rename: () => {
+      $unsavedState = true;
       $components = folderToComponents($folders); // recompile selected component
       output.update($components[0], $compile_options);
 

@@ -80,6 +80,8 @@
   const chapters = writable([]);
   const folders = writable([]);
   const currentComponent = writable('');
+  const unsavedState = writable(false);
+  $: console.log($unsavedState);
 
   function updateApps(components) {
     if ($currentApp === 'A') {
@@ -108,6 +110,7 @@
     componentsToFolder,
     updateApps,
     Prism,
+    unsavedState,
   });
 
   onMount(() => {
@@ -146,6 +149,9 @@
       try {
         repl.handle_select($currentComponent);
         repl.focus();
+        setTimeout(() => {
+          $unsavedState = false;
+        }, 500);
       } catch (err) {
         if (loadAttempts < 100) {
           loadAttempts++;
