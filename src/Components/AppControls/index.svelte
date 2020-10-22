@@ -5,12 +5,14 @@
   import PreviewToggleButton from './PreviewToggleButton.svelte';
   import DownloadButton from './Download.svelte';
   import UploadProjects from './UploadProjects.svelte';
+  import SaveButton from './SaveButton.svelte';
 
   export let repl;
 </script>
 
 <div class="app-controls">
   <UploadProjects />
+  <SaveButton />
   <ProjectName {repl} />
   <ChapterName {repl} />
   <SelectAppButton {repl} />
