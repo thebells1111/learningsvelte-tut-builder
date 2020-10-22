@@ -151,7 +151,7 @@
 <style>
   label {
     border: 1px solid black;
-    padding: 0.25em;
+    padding: 0.2em 0.25em;
     border-radius: var(--border-r);
     position: relative;
   }

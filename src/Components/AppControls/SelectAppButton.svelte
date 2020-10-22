@@ -21,24 +21,25 @@
 <style>
   button {
     position: relative;
-    top: -0.1rem;
     display: inline-block;
-    padding: 0.2em;
-    opacity: 0.7;
-    transition: opacity 0.3s;
     font-family: var(--font);
-    font-size: 1rem;
-    color: black;
-    /* width: 1.6em;
-		height: 1.6em; */
-    line-height: 1;
-    margin: 0 0 0 0.2em;
+    border: 1px solid black;
+    padding: 0.5em 0.25em;
+    border-radius: var(--border-r);
+    position: relative;
+    font-size: 0.8em;
+    font-weight: 700;
+    text-align: left;
+  }
+
+  button:disabled {
+    opacity: 0.3;
   }
 
   button:hover {
-    opacity: 1;
+    background-color: #efefef;
   }
-  button:disabled {
-    opacity: 0.3;
+  button:active {
+    background-color: #d8d8d8;
   }
 </style>
