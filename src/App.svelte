@@ -81,7 +81,6 @@
   const folders = writable([]);
   const currentComponent = writable('');
   const unsavedState = writable(false);
-  $: console.log($unsavedState);
 
   function updateApps(components) {
     if ($currentApp === 'A') {
@@ -115,13 +114,24 @@
 
   onMount(() => {
     if (importedDirectory) {
+      console.log('IMPORTED');
       localStorage.setItem('directories', JSON.stringify(directoriesJSON));
       $directories = directoriesJSON;
     } else {
       $directories = JSON.parse(localStorage.getItem('directories'));
     }
-    $projectName = localStorage.getItem('currentProject') || $projectName;
-    $chapterName = localStorage.getItem('currentChapter') || $chapterName;
+    let storedProjectName = localStorage.getItem('currentProject');
+    let storedChapterName = localStorage.getItem('currentChapter');
+    if (!$directories[storedProjectName]) {
+      localStorage.setItem('currentProject', $projectName);
+      storedProjectName = $projectName;
+    }
+    $projectName = storedProjectName;
+    if (!$directories[$projectName][storedChapterName]) {
+      localStorage.setItem('currentChapter', $chapterName);
+      storedChapterName = $chapterName;
+    }
+    $chapterName = storedChapterName;
     $projects = $directories.projectNames;
     $chapters = $directories[$projectName].chapterNames;
 

@@ -1,15 +1,39 @@
 <script>
   import { getContext } from 'svelte';
   import folderToComponent from '../../../utils/folderToComponents';
-  const { directories, folders, folderToComponents, unsavedState } = getContext(
-    'Controls'
-  );
+  const {
+    directories,
+    unsavedState,
+    projectName,
+    chapterName,
+    appA,
+    appB,
+    mde,
+  } = getContext('Controls');
 
   function saveApp() {
+    let dir = {};
+    dir.text = $mde.value();
+    dir['app-a'] = $appA.components.map(v => {
+      let comp = {};
+      comp.webkitRelativePath = `${v.name}.${v.type}`;
+      comp.source = v.source;
+      comp.path = `projects/${$projectName}/${$chapterName}/app-a/${comp.webkitRelativePath}`;
+      return comp;
+    });
+
+    if ($appB && $appB.components.length === 1 && $appB.components[0].source) {
+      dir['app-b'] = $appB.components.map(v => {
+        let comp = {};
+        comp.webkitRelativePath = `${v.name}.${v.type}`;
+        comp.source = v.source;
+        comp.path = `projects/${$projectName}/${$chapterName}/app-b/${comp.webkitRelativePath}`;
+        return comp;
+      });
+    }
+
     $unsavedState = false;
-    console.log($directories);
-    console.log($folders);
-    //console.log(folderToComponent($folders));
+    $directories[$projectName][$chapterName] = dir;
     localStorage.setItem('directories', JSON.stringify($directories));
   }
 </script>

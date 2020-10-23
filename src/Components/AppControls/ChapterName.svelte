@@ -78,6 +78,7 @@
     let previousChapter = [...$chapters].pop();
     $chapterName = newChapterName;
     $chapters = $chapters.concat($chapterName);
+    $directories[$projectName].chapterNames = $chapters;
 
     $directories[$projectName][$chapterName].text = '';
 
@@ -105,6 +106,7 @@
     repl.handle_select($currentComponent);
     repl.focus();
     localStorage.setItem('currentChapter', $chapterName);
+    localStorage.setItem('directories', JSON.stringify($directories));
   }
 </script>
 
