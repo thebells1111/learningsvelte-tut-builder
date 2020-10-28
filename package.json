@@ -19,7 +19,11 @@
     "svelte-loader": "2.13.3",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.0",
-    "webpack-dev-server": "^3.3.1"
+    "webpack-dev-server": "^3.3.1",
+    "file-loader": "^5.0.2",
+    "marked": "^0.8.2",
+    "monaco-editor-webpack-plugin": "^1.9.1",
+    "svelte-json-tree": "^0.1.0"
   },
   "dependencies": {
     "codemirror": "^5.58.1",
@@ -27,7 +31,9 @@
     "marked": "^0.8.2",
     "sourcemap-codec": "^1.4.6",
     "svelte-json-tree": "0.0.5",
-    "yootils": "0.0.16"
+    "yootils": "0.0.16",
+    "monaco-editor": "^0.20.0",
+    "node-fetch": "^2.6.0"
   },
   "files": [
     "src",

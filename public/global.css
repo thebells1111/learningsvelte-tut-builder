@@ -66,51 +66,51 @@
 }
 
 body {
-  --font: 'Overpass', sans-serif;
-  --font-mono: 'Fira Mono', monospace;
+  --font: "Overpass", sans-serif;
+  --font-mono: "Fira Mono", monospace;
   --font-ui: var(--font-mono);
-  --font-title: 'FrederickatheGreat-Regular', 'Overpass', sans-serif;
-  --font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+  --font-title: "FrederickatheGreat-Regular", "Overpass", sans-serif;
+  --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
 /*	fonts ---------------------------------- */
 /* overpass-300normal - latin */
 @font-face {
-  font-family: 'Overpass';
+  font-family: "Overpass";
   font-style: normal;
   font-weight: 300;
   font-display: fallback;
-  src: local('Overpass Light '), local('Overpass-Light'),
-    url('fonts/overpass/overpass-latin-300.woff2') format('woff2');
+  src: local("Overpass Light "), local("Overpass-Light"),
+    url("fonts/overpass/overpass-latin-300.woff2") format("woff2");
 }
 
 /* overpass-600normal - latin */
 @font-face {
-  font-family: 'Overpass';
+  font-family: "Overpass";
   font-style: normal;
   font-weight: 600;
   font-display: fallback;
-  src: local('Overpass Bold '), local('Overpass-Bold'),
-    url('fonts/overpass/overpass-latin-600.woff2') format('woff2');
+  src: local("Overpass Bold "), local("Overpass-Bold"),
+    url("fonts/overpass/overpass-latin-600.woff2") format("woff2");
 }
 
 /* fira-mono-400normal - latin */
 @font-face {
-  font-family: 'Fira Mono';
+  font-family: "Fira Mono";
   font-style: normal;
   font-weight: 400;
   font-display: fallback;
-  src: local('Fira Mono Regular '), local('Fira Mono-Regular'),
-    url('fonts/fira-mono/fira-mono-latin-400.woff2') format('woff2');
+  src: local("Fira Mono Regular "), local("Fira Mono-Regular"),
+    url("fonts/fira-mono/fira-mono-latin-400.woff2") format("woff2");
 }
 
 /* FrederickatheGreat-Regular */
 @font-face {
-  font-family: 'FrederickatheGreat-Regular';
-  src: local('FrederickatheGreat-Regular'),
-    url('fonts/Fredericka_the_Great/FrederickatheGreat-Regular.woff2')
-      format('woff2'); /* Modern Browsers */
+  font-family: "FrederickatheGreat-Regular";
+  src: local("FrederickatheGreat-Regular"),
+    url("fonts/Fredericka_the_Great/FrederickatheGreat-Regular.woff2")
+      format("woff2"); /* Modern Browsers */
   font-weight: normal;
   font-style: normal;
 }
@@ -360,7 +360,6 @@ button > svg,
 a {
   position: relative;
   padding: 0 0 1px 0;
-  border-bottom: 1px solid currentColor;
   user-select: none;
   color: var(--prime);
   transition: color 0.2s, border 0.2s, padding 0.2s;
@@ -372,7 +371,6 @@ a:hover {
 
 a:hover {
   padding: 0;
-  border-bottom: 2px solid currentColor;
 }
 
 a.no-underline {
@@ -400,7 +398,7 @@ a.no-underline {
 }
 
 .listify ul > li:before {
-  content: '';
+  content: "";
   position: absolute;
   margin-top: 1.1rem;
   margin-left: -1.8rem;
@@ -538,7 +536,7 @@ figcaption,
 }
 
 /*	inputs --------------------------------- */
-input[type='checkbox'] {
+input[type="checkbox"] {
   /* display: block; */
   position: relative;
   height: 1em;
@@ -551,8 +549,8 @@ input[type='checkbox'] {
   margin: 0 0.6em 0 0;
 }
 
-input[type='checkbox']::before {
-  content: '';
+input[type="checkbox"]::before {
+  content: "";
   position: absolute;
   display: block;
   height: 100%;
@@ -566,12 +564,12 @@ input[type='checkbox']::before {
   box-sizing: content-box;
 }
 
-input[type='checkbox']:checked::before {
+input[type="checkbox"]:checked::before {
   background: var(--prime);
 }
 
-input[type='checkbox']::after {
-  content: '';
+input[type="checkbox"]::after {
+  content: "";
   position: absolute;
   display: block;
   height: 1em;
@@ -584,6 +582,6 @@ input[type='checkbox']::after {
   -webkit-transition: background 0.2s ease-out, left 0.2s ease-out;
 }
 
-input[type='checkbox']:checked::after {
+input[type="checkbox"]:checked::after {
   left: calc(100% - 9px);
 }

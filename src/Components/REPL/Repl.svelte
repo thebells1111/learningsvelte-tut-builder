@@ -1,37 +1,23 @@
 <script>
-  import { setContext, getContext, createEventDispatcher } from 'svelte';
-  import { writable } from 'svelte/store';
-  import SplitPane from './SplitPane.svelte';
-  import ComponentSelector from './Input/ComponentSelector.svelte';
-  import Directory from './Input/Directory/Directory.svelte';
-  import ModuleEditor from './Input/ModuleEditor.svelte';
-  import Output from './Output/index.svelte';
-  import Bundler from './Bundler.js';
-  import { is_browser } from './env.js';
-  import componentsToFolder from '../../../utils/componentsToFolder';
-  import folderToComponents from '../../../utils/folderToComponents';
+  import { setContext, createEventDispatcher } from "svelte";
+  import { writable } from "svelte/store";
+  import SplitPane from "./SplitPane.svelte";
+  import ComponentSelector from "./Input/ComponentSelector.svelte";
+  import ModuleEditor from "./Input/ModuleEditor.svelte";
+  import Output from "./Output/index.svelte";
+  import Bundler from "./Bundler.js";
+  import { is_browser } from "./env.js";
 
   export let workersUrl;
-  export let packagesUrl = 'https://unpkg.com';
+  export let packagesUrl = "https://unpkg.com";
   export let svelteUrl = `${packagesUrl}/svelte`;
   export let embedded = false;
-  export let orientation = 'columns';
-  export let relaxed = true;
+  export let orientation = "columns";
+  export let relaxed = false;
   export let fixed = false;
   export let fixedPos = 50;
-  export let injectedJS = '';
-  export let injectedCSS = '';
-  export let htmlContent = '';
-
-  const {
-    showMarkdownPreview,
-    folders,
-    updateApps,
-    currentComponent,
-    unsavedState,
-  } = getContext('Controls');
-
-  const historyMap = new Map();
+  export let injectedJS = "";
+  export let injectedCSS = "";
 
   export function toJSON() {
     return {
@@ -40,68 +26,55 @@
     };
   }
 
+  // this gets called by the parent component on initialization, typically using onMount
   export async function set(data) {
+    //this creates a model and adds it to the component object for the initial components
+    data.components.forEach((component) => {
+      component.model = module_editor.createNewModel(
+        component.source,
+        component.type === "svelte" ? "html" : component.type
+      );
+    });
+
     components.set(data.components);
-    let selectedIndex = 0;
-    if (data.selectedComponent) {
-      const name = data.selectedComponent.split('.')[0];
-      const type = data.selectedComponent.split('.')[1];
-      data.components.forEach((v, i) => {
-        if (v.name === name && v.type === type) {
-          selectedIndex = i;
-        }
-      });
-    }
-    selected.set(data.components[selectedIndex]);
+    selected.set(data.components[0]);
 
     rebundle();
 
     await module_editor_ready;
     await output_ready;
 
-    injectedCSS = data.css || '';
-    await module_editor.set($selected.source, $selected.type);
+    injectedCSS = data.css || "";
     output.set($selected, $compile_options);
-
-    historyMap.clear();
-    module_editor.clearHistory();
-
-    $foldLines = Array.isArray(data.foldLine) ? data.foldLine : [data.foldLine];
-
-    $foldLines.forEach(line => {
-      if (Number(line)) {
-        module_editor.foldCode(line);
-      }
-      if (typeof line === 'string') {
-        module_editor.foldString(line);
-      }
-    });
-  }
-
-  export function get_selected_component() {
-    return get_component_name($selected);
+    module_editor.setNewModel(data.components[0].model);
   }
 
   export function update(data) {
     const { name, type } = $selected || {};
 
     components.set(data.components);
+    data.components.forEach((component) => {
+      if (!component.model) {
+        component.model = module_editor.createNewModel(
+          component.source,
+          component.type === "svelte" ? "html" : component.type
+        );
+      }
+    });
 
     const matched_component = data.components.find(
-      file => file.name === name && file.type === type
+      (file) => file.name === name && file.type === type
     );
     selected.set(matched_component || data.components[0]);
 
-    injectedCSS = data.css || '';
+    injectedCSS = data.css || "";
 
     if (matched_component) {
-      module_editor.update(matched_component.source);
       output.update(matched_component, $compile_options);
+      module_editor.setNewModel(matched_component.model);
     } else {
-      module_editor.set(matched_component.source, matched_component.type);
-      output.set(matched_component, $compile_options);
-
-      module_editor.clearHistory();
+      output.set(data.components[0], $compile_options);
+      module_editor.setNewModel(data.components[0]);
     }
   }
 
@@ -109,13 +82,14 @@
     throw new Error(`You must supply workersUrl prop to <Repl>`);
   }
 
+  const dispatch = createEventDispatcher();
+
   const components = writable([]);
   const selected = writable(null);
   const bundle = writable(null);
-  const foldLines = writable(null);
 
   const compile_options = writable({
-    generate: 'dom',
+    generate: "dom",
     dev: false,
     css: false,
     hydratable: false,
@@ -125,6 +99,7 @@
   });
 
   let module_editor;
+  let input_model;
   let output;
 
   let current_token;
@@ -136,45 +111,40 @@
 
   // TODO this is a horrible kludge, written in a panic. fix it
   let fulfil_module_editor_ready;
-  let module_editor_ready = new Promise(f => (fulfil_module_editor_ready = f));
+  let module_editor_ready = new Promise(
+    (f) => (fulfil_module_editor_ready = f)
+  );
 
   let fulfil_output_ready;
-  let output_ready = new Promise(f => (fulfil_output_ready = f));
+  let output_ready = new Promise((f) => (fulfil_output_ready = f));
 
-  setContext('REPL', {
+  setContext("REPL", {
     components,
     selected,
     bundle,
     compile_options,
-    foldLines,
-    htmlContent,
-
     rebundle,
 
-    navigate: item => {
+    navigate: (item) => {
       const match = /^(.+)\.(\w+)$/.exec(item.filename);
       if (!match) return; // ???
 
       const [, name, type] = match;
       const component = $components.find(
-        c => c.name === name && c.type === type
+        (c) => c.name === name && c.type === type
       );
       handle_select(component);
-
-      setTimeout(() => {
-        module_editor.focus();
-        module_editor.setCursor({
-          line: item.start.line - 1,
-          ch: item.start.column,
-        });
-      }, 0);
 
       // TODO select the line/column in question
     },
 
-    handle_change: event => {
-      $unsavedState = true;
-      selected.update(component => {
+    handle_delete: (component) => {
+      console.log(component);
+      module_editor.deleteModel(component);
+    },
+
+    handle_change: (event) => {
+      selected.update((component) => {
         // TODO this is a bit hacky — we're relying on mutability
         // so that updating components works... might be better
         // if a) components had unique IDs, b) we tracked selected
@@ -183,40 +153,17 @@
         component.source = event.detail.value;
         return component;
       });
-      $components = folderToComponents($folders);
-      updateApps($components);
+
+      components.update((c) => c);
 
       // recompile selected component
       output.update($selected, $compile_options);
 
       rebundle();
 
-      // dispatch('change', {
-      //   components: $components,
-      // });
-    },
-
-    handle_file_delete: fileIndex => {
-      $unsavedState = true;
-      $components = folderToComponents($folders);
-
-      // recompile selected component
-      output.update($components[0], $compile_options);
-
-      rebundle();
-
-      if (fileIndex >= $components.length) {
-        $currentComponent = $folders[$components.length - 1];
-        handle_select($currentComponent);
-      }
-    },
-
-    handle_rename: () => {
-      $unsavedState = true;
-      $components = folderToComponents($folders); // recompile selected component
-      output.update($components[0], $compile_options);
-
-      rebundle();
+      dispatch("change", {
+        components: $components,
+      });
     },
 
     register_module_editor(editor) {
@@ -234,19 +181,16 @@
     },
   });
 
-  export function focus() {
-    module_editor.focus();
-  }
-
-  export function handle_select(component) {
-    historyMap.set(get_component_name($selected), module_editor.getHistory());
-    selected.set(component);
-    module_editor.set(component.source, component.type);
-    if (historyMap.has(get_component_name($selected))) {
-      module_editor.setHistory(historyMap.get(get_component_name($selected)));
-    } else {
-      module_editor.clearHistory();
+  function handle_select(component) {
+    //creates a model and adds it to the component object for new components
+    if (!component.model) {
+      component.model = module_editor.createNewModel(
+        component.source,
+        component.type === "svelte" ? "html" : component.type
+      );
     }
+    module_editor.setNewModel(component.model);
+    selected.set(component);
     output.set($selected, $compile_options);
   }
 
@@ -255,8 +199,6 @@
   }
 
   let input;
-  let sourceErrorLoc;
-  let runtimeErrorLoc; // TODO refactor this stuff — runtimeErrorLoc is unused
   let status = null;
 
   const bundler =
@@ -265,7 +207,7 @@
       workersUrl,
       packagesUrl,
       svelteUrl,
-      onstatus: message => {
+      onstatus: (message) => {
         status = message;
       },
     });
@@ -275,69 +217,26 @@
   }
 </script>
 
-<div class="container" class:orientation>
-  <SplitPane
-    type={orientation === 'rows' ? 'vertical' : 'horizontal'}
-    pos={fixed ? fixedPos : 50}
-    {fixed}
-  >
-    <section slot="a">
-      <SplitPane type={'horizontal'} pos={33}>
-        <section slot="a">
-          <Directory {handle_select} />
-        </section>
-        <section slot="b">
-          <ModuleEditor
-            bind:this={input}
-            errorLoc={sourceErrorLoc || runtimeErrorLoc}
-          />
-        </section>
-        <ModuleEditor
-          bind:this={input}
-          errorLoc={sourceErrorLoc || runtimeErrorLoc}
-        />
-      </SplitPane>
-    </section>
-
-    <section class="output-viewer" slot="b" style="height: 100%;">
-      <Output
-        {svelteUrl}
-        {workersUrl}
-        {status}
-        {embedded}
-        {relaxed}
-        {injectedJS}
-        {injectedCSS}
-      />
-      <div
-        class="markdown-preview"
-        class:show-markdown-preview={$showMarkdownPreview}
-      >
-        {@html htmlContent}
-      </div>
-    </section>
-  </SplitPane>
-</div>
-
 <style>
   .container {
+    position: relative;
     width: 100%;
     height: 100%;
-    background-color: #fff;
-    --font: 'Inter', 'Open Sans', 'Helvetica', 'Verdana', sans-serif;
-    --font-mono: 'Inconsolata', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono',
-      'Courier New', monospace;
-    --prime: #005cc5;
-    --back-light: #fff;
   }
 
   .container :global(section) {
+    position: relative;
+    padding: 42px 0 0 0;
     height: 100%;
     box-sizing: border-box;
   }
 
   .container :global(section) > :global(*):first-child {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
+    height: 42px;
     box-sizing: border-box;
   }
 
@@ -345,31 +244,27 @@
     width: 100%;
     height: 100%;
   }
-
-  .output-viewer {
-    position: relative;
-    padding: 42px 0 0 0;
-  }
-
-  .output-viewer > :global(*):first-child {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 42px;
-  }
-
-  .markdown-preview {
-    position: absolute;
-    background-color: white;
-    z-index: 99;
-    top: 0;
-    left: 1px;
-    width: calc(100% - 1px) !important;
-    display: none;
-    padding: 1em;
-  }
-
-  .show-markdown-preview {
-    display: block;
-  }
 </style>
+
+<div class="container" class:orientation>
+  <SplitPane
+    type={orientation === 'rows' ? 'vertical' : 'horizontal'}
+    pos={fixed ? fixedPos : orientation === 'rows' ? 50 : 60}
+    {fixed}>
+    <section slot="a">
+      <ComponentSelector {handle_select} />
+      <ModuleEditor bind:this={input} />
+    </section>
+
+    <section slot="b" style="height: 100%;">
+      <Output
+        {svelteUrl}
+        {workersUrl}
+        {status}
+        {embedded}
+        {relaxed}
+        {injectedJS}
+        {injectedCSS} />
+    </section>
+  </SplitPane>
+</div>
