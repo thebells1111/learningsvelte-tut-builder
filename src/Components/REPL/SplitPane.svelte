@@ -1,6 +1,6 @@
 <script>
-  import * as yootils from "yootils";
-  import { createEventDispatcher } from "svelte";
+  import * as yootils from 'yootils';
+  import { createEventDispatcher } from 'svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -13,9 +13,9 @@
 
   let w;
   let h;
-  $: size = type === "vertical" ? h : w;
+  $: size = type === 'vertical' ? h : w;
 
-  $: min = 1;
+  $: min = 100 * (buffer / size);
   $: max = 100 - min;
   $: pos = yootils.clamp(pos, min, max);
 
@@ -26,26 +26,26 @@
   function setPos(event) {
     const { top, left } = refs.container.getBoundingClientRect();
 
-    const px = type === "vertical" ? event.clientY - top : event.clientX - left;
+    const px = type === 'vertical' ? event.clientY - top : event.clientX - left;
 
     pos = (100 * px) / size;
-    dispatch("change");
+    dispatch('change');
   }
 
   function setTouchPos(event) {
     const { top, left } = refs.container.getBoundingClientRect();
 
     const px =
-      type === "vertical"
+      type === 'vertical'
         ? event.touches[0].clientY - top
         : event.touches[0].clientX - left;
 
     pos = (100 * px) / size;
-    dispatch("change");
+    dispatch('change');
   }
 
   function drag(node, callback) {
-    const mousedown = (event) => {
+    const mousedown = event => {
       if (event.which !== 1) return;
 
       event.preventDefault();
@@ -55,25 +55,25 @@
       const onmouseup = () => {
         dragging = false;
 
-        window.removeEventListener("mousemove", callback, false);
-        window.removeEventListener("mouseup", onmouseup, false);
+        window.removeEventListener('mousemove', callback, false);
+        window.removeEventListener('mouseup', onmouseup, false);
       };
 
-      window.addEventListener("mousemove", callback, false);
-      window.addEventListener("mouseup", onmouseup, false);
+      window.addEventListener('mousemove', callback, false);
+      window.addEventListener('mouseup', onmouseup, false);
     };
 
-    node.addEventListener("mousedown", mousedown, false);
+    node.addEventListener('mousedown', mousedown, false);
 
     return {
       destroy() {
-        node.removeEventListener("mousedown", mousedown, false);
+        node.removeEventListener('mousedown', mousedown, false);
       },
     };
   }
 
   function touchDrag(node, callback) {
-    const touchdown = (event) => {
+    const touchdown = event => {
       if (event.targetTouches.length > 1) return;
 
       event.preventDefault();
@@ -83,26 +83,54 @@
       const ontouchend = () => {
         dragging = false;
 
-        window.removeEventListener("touchmove", callback, false);
-        window.removeEventListener("touchend", ontouchend, false);
+        window.removeEventListener('touchmove', callback, false);
+        window.removeEventListener('touchend', ontouchend, false);
       };
 
-      window.addEventListener("touchmove", callback, false);
-      window.addEventListener("touchend", ontouchend, false);
+      window.addEventListener('touchmove', callback, false);
+      window.addEventListener('touchend', ontouchend, false);
     };
 
-    node.addEventListener("touchstart", touchdown, false);
+    node.addEventListener('touchstart', touchdown, false);
 
     return {
       destroy() {
-        node.removeEventListener("touchstart", touchdown, false);
+        node.removeEventListener('touchstart', touchdown, false);
       },
     };
   }
 
-  $: side = type === "horizontal" ? "left" : "top";
-  $: dimension = type === "horizontal" ? "width" : "height";
+  $: side = type === 'horizontal' ? 'left' : 'top';
+  $: dimension = type === 'horizontal' ? 'width' : 'height';
 </script>
+
+<div
+  class="container"
+  bind:this={refs.container}
+  bind:clientWidth={w}
+  bind:clientHeight={h}
+>
+  <div class="pane" style="{dimension}: {pos}%;">
+    <slot name="a" />
+  </div>
+
+  <div class="pane" style="{dimension}: {100 - pos}%;">
+    <slot name="b" />
+  </div>
+
+  {#if !fixed}
+    <div
+      class="{type} divider"
+      style="{side}: calc({pos}%)"
+      use:drag={setPos}
+      use:touchDrag={setTouchPos}
+    />
+  {/if}
+</div>
+
+{#if dragging}
+  <div class="mousecatcher" />
+{/if}
 
 <style>
   .container {
@@ -134,7 +162,7 @@
   }
 
   .divider::after {
-    content: "";
+    content: '';
     position: absolute;
     /* background-color: #eee; */
     background-color: var(--second);
@@ -196,29 +224,3 @@
     bottom: 0;
   }
 </style>
-
-<div
-  class="container"
-  bind:this={refs.container}
-  bind:clientWidth={w}
-  bind:clientHeight={h}>
-  <div class="pane" style="{dimension}: {pos}%;">
-    <slot name="a" />
-  </div>
-
-  <div class="pane" style="{dimension}: {100 - pos}%;">
-    <slot name="b" />
-  </div>
-
-  {#if !fixed}
-    <div
-      class="{type} divider"
-      style="{side}: calc({pos}%)"
-      use:drag={setPos}
-      use:touchDrag={setTouchPos} />
-  {/if}
-</div>
-
-{#if dragging}
-  <div class="mousecatcher" />
-{/if}

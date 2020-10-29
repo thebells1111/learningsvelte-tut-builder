@@ -17,6 +17,7 @@
     filesToTreeNodes,
     currentComponent,
     unsavedState,
+    markdownContent,
   } = getContext('Controls');
   let newProjectName;
 
@@ -87,7 +88,8 @@
         $appB = undefined;
       }
 
-      $mde.value($directories[$projectName][$chapterName].text);
+      //$mde.value($directories[$projectName][$chapterName].text);
+      $markdownContent = $directories[$projectName][$chapterName].text;
 
       $folders = filesToTreeNodes(
         $directories[$projectName][$chapterName]['app-a']

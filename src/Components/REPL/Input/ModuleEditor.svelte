@@ -1,14 +1,14 @@
 <script>
-  import { getContext, onMount } from "svelte";
-  import MonacoEditor from "../MonacoEditor.svelte";
-  import Message from "../Message.svelte";
+  import { getContext, onMount } from 'svelte';
+  import MonacoEditor from '../MonacoEditor.svelte';
+  import Message from '../Message.svelte';
 
   const {
     bundle,
     selected,
     handle_change,
     register_module_editor,
-  } = getContext("REPL");
+  } = getContext('REPL');
 
   let editor;
   onMount(() => {
@@ -24,7 +24,33 @@
   }
 </script>
 
-<style>
+<div class="editor-wrapper">
+  <div class="editor notranslate" translate="no">
+    <MonacoEditor bind:this={editor} on:didContentChange={handle_change} />
+  </div>
+
+  <div class="info">
+    {#if $bundle}
+      {#if $bundle.error}
+        <Message
+          kind="error"
+          details={$bundle.error}
+          filename="{$selected.name}.{$selected.type}"
+        />
+      {:else if $bundle.warnings.length > 0}
+        {#each $bundle.warnings as warning}
+          <Message
+            kind="warning"
+            details={warning}
+            filename="{$selected.name}.{$selected.type}"
+          />
+        {/each}
+      {/if}
+    {/if}
+  </div>
+</div>
+
+<div>
   .editor-wrapper {
     z-index: 5;
     background: var(--back-light);
@@ -49,28 +75,4 @@
     height: auto;
     /* height: 100%; */
   }
-</style>
-
-<div class="editor-wrapper">
-  <div class="editor notranslate" translate="no">
-    <MonacoEditor bind:this={editor} on:didContentChange={handle_change} />
-  </div>
-
-  <div class="info">
-    {#if $bundle}
-      {#if $bundle.error}
-        <Message
-          kind="error"
-          details={$bundle.error}
-          filename="{$selected.name}.{$selected.type}" />
-      {:else if $bundle.warnings.length > 0}
-        {#each $bundle.warnings as warning}
-          <Message
-            kind="warning"
-            details={warning}
-            filename="{$selected.name}.{$selected.type}" />
-        {/each}
-      {/if}
-    {/if}
-  </div>
 </div>

@@ -54,8 +54,7 @@
   import { readable, writable } from 'svelte/store';
   import { setContext, onMount } from 'svelte';
   let repl;
-  let markdownContent = '';
-  $: htmlContent = marked(markdownContent);
+  $: htmlContent = marked($markdownContent);
 
   const blankApp = readable({
     components: [
@@ -81,6 +80,7 @@
   const folders = writable([]);
   const currentComponent = writable('');
   const unsavedState = writable(false);
+  const markdownContent = writable('');
 
   function updateApps(components) {
     if ($currentApp === 'A') {
@@ -110,6 +110,7 @@
     updateApps,
     Prism,
     unsavedState,
+    markdownContent,
   });
 
   onMount(() => {
@@ -136,7 +137,7 @@
     $chapters = $directories[$projectName].chapterNames;
 
     function mount() {
-      if (repl && $mde) {
+      if (repl) {
         initializeApp();
       } else {
         setTimeout(mount, 1);
@@ -146,7 +147,8 @@
   });
 
   function initializeApp() {
-    $mde.value($directories[$projectName][$chapterName].text);
+    //$mde.value($directories[$projectName][$chapterName].text);
+    $markdownContent = $directories[$projectName][$chapterName].text;
 
     $folders = filesToTreeNodes(
       $directories[$projectName][$chapterName]['app-a']
@@ -181,7 +183,8 @@
 <AppControls {repl} bind:htmlContent />
 <panel-container use:splitPane>
   <div id="editor">
-    <MarkdownEditor bind:markdownContent />
+    <textarea bind:value={$markdownContent} />
+    <!-- <MarkdownEditor bind:markdownContent /> -->
   </div>
 
   <div id="repl">
@@ -201,9 +204,23 @@
     cursor: ew-resize;
   }
 
+  #repl {
+    width: 100%;
+  }
+
   #editor {
     display: flex;
     flex-direction: column;
     border-right: 1px solid gray;
+    width: 100%;
+  }
+
+  textarea {
+    width: 100%;
+    height: 100%;
+    resize: none;
+    padding: 0.5em;
+    border: none;
+    outline: none;
   }
 </style>
