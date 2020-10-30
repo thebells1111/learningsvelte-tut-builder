@@ -11,8 +11,11 @@
   export let injectedJS;
   export let injectedCSS;
 
+  let selected_type = '';
+  let markdown = '';
+
   register_output({
-    set: async (selected, options) => {
+    set: async selected => {
       selected_type = selected.type;
 
       if (selected.type === 'md') {
@@ -21,24 +24,17 @@
       }
     },
 
-    update: async (selected, options) => {
+    update: async selected => {
       if (selected.type === 'md') {
         markdown = marked(selected.source);
         return;
       }
     },
   });
-
-  let view = 'result';
-  let selected_type = '';
-  let markdown = '';
 </script>
 
 <!-- component viewer -->
-<div
-  class="tab-content"
-  class:visible={selected_type !== 'md' && view === 'result'}
->
+<div class="tab-content" class:visible={selected_type !== 'md'}>
   <Viewer
     bind:error={runtimeError}
     {status}
