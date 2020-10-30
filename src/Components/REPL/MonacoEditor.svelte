@@ -3,6 +3,8 @@
   import * as monaco from 'monaco-editor';
   import { createEventDispatcher } from 'svelte';
 
+  import sveltePlugin from '../../../utils/newPlugin.js';
+
   let editorDOM;
   let editor;
 
@@ -67,8 +69,18 @@
         : event.ctrlKey)
     ) {
       event.preventDefault();
-      editor.layout();
+      //editor.layout();
+      format();
     }
+  }
+
+  function format() {
+    console.log(editor.getValue());
+    let code = sveltePlugin.format(editor.getValue(), {
+      parser: 'svelte',
+      plugins: [sveltePlugin],
+    });
+    editor.setValue(code);
   }
 </script>
 
