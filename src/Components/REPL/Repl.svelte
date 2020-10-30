@@ -22,6 +22,10 @@
   export let injectedJS = '';
   export let injectedCSS = '';
   export let htmlContent = '';
+  let directoryElement;
+  let directoryExpanded = true;
+  let storedDirectoryWidth = '33%';
+  let storedEditorWidth = '67%';
 
   const {
     showMarkdownPreview,
@@ -283,8 +287,42 @@
   $: if (output && $selected) {
     output.update($selected, $compile_options);
   }
+
+  function handleKeydown(event) {
+    if (
+      event.key === 'b' &&
+      (typeof navigator !== 'undefined' && navigator.platform === 'MacIntel'
+        ? event.metaKey
+        : event.ctrlKey)
+    ) {
+      event.preventDefault();
+      toggleDirectory();
+    }
+  }
+
+  function toggleDirectory() {
+    let container = directoryElement.parentElement.parentElement;
+    let panes = container.querySelectorAll('.pane');
+    let directory = panes[0];
+    let editor = panes[1];
+    let divider = container.querySelector('.divider');
+    if (directoryExpanded) {
+      storedDirectoryWidth = directory.style.width;
+      storedEditorWidth = editor.style.width;
+      directory.style.width = '0%';
+      editor.style.width = '100%';
+    } else {
+      directory.style.width = storedDirectoryWidth;
+      editor.style.width = storedEditorWidth;
+    }
+
+    divider.style.left = `calc(${directory.style.width}`;
+    directoryExpanded = !directoryExpanded;
+    layout();
+  }
 </script>
 
+<svelte:window on:keydown={handleKeydown} />
 <div class="container" class:orientation>
   <SplitPane
     type={orientation === 'rows' ? 'vertical' : 'horizontal'}
@@ -293,7 +331,7 @@
   >
     <section slot="a">
       <SplitPane type={'horizontal'} pos={33}>
-        <section class="directory" slot="a">
+        <section class="directory" slot="a" bind:this={directoryElement}>
           <Directory {handle_select} />
         </section>
         <section class="module-editor" slot="b">
