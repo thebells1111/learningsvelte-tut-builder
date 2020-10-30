@@ -36,7 +36,21 @@
     $directories[$projectName][$chapterName] = dir;
     localStorage.setItem('directories', JSON.stringify($directories));
   }
+
+  function handleKeydown(event) {
+    if (
+      event.key === 's' &&
+      (typeof navigator !== 'undefined' && navigator.platform === 'MacIntel'
+        ? event.metaKey
+        : event.ctrlKey)
+    ) {
+      event.preventDefault();
+      saveApp();
+    }
+  }
 </script>
+
+<svelte:window on:keydown={handleKeydown} />
 
 <button on:click={saveApp}>Save</button>
 

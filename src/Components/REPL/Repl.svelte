@@ -199,7 +199,7 @@
       });
     },
 
-    handle_file_delete: fileIndex => {
+    handle_file_delete(fileIndex) {
       $unsavedState = true;
       $components = folderToComponents($folders);
 
@@ -214,7 +214,7 @@
       }
     },
 
-    handle_rename: () => {
+    handle_rename() {
       $unsavedState = true;
       $components = folderToComponents($folders); // recompile selected component
       output.update($components[0], $compile_options);
@@ -235,10 +235,18 @@
     request_focus() {
       module_editor.focus();
     },
+
+    layout() {
+      module_editor.layout();
+    },
   });
 
   export function focus() {
     module_editor.focus();
+  }
+
+  export function layout() {
+    module_editor.layout();
   }
 
   export function handle_select(component) {
@@ -285,10 +293,10 @@
   >
     <section slot="a">
       <SplitPane type={'horizontal'} pos={33}>
-        <section slot="a">
+        <section class="directory" slot="a">
           <Directory {handle_select} />
         </section>
-        <section slot="b">
+        <section class="module-editor" slot="b">
           <ModuleEditor bind:this={input} />
         </section>
       </SplitPane>

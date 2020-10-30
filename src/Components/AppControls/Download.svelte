@@ -4,18 +4,6 @@
 
   const { appA, appB, mde, chapterName } = getContext('Controls');
 
-  function handleKeydown(event) {
-    if (
-      event.key === 's' &&
-      (typeof navigator !== 'undefined' && navigator.platform === 'MacIntel'
-        ? event.metaKey
-        : event.ctrlKey)
-    ) {
-      event.preventDefault();
-      download();
-    }
-  }
-
   let downloading = false;
   async function download() {
     downloading = true;
@@ -61,8 +49,6 @@
     link.remove();
   }
 </script>
-
-<svelte:window on:keydown={handleKeydown} />
 
 <button disabled={downloading} on:click={download} title="download zip file">
   Download

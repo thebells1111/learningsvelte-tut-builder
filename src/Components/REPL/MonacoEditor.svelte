@@ -1,7 +1,7 @@
 <script>
-  import { onMount } from "svelte";
-  import * as monaco from "monaco-editor";
-  import { createEventDispatcher } from "svelte";
+  import { onMount } from 'svelte';
+  import * as monaco from 'monaco-editor';
+  import { createEventDispatcher } from 'svelte';
 
   let editorDOM;
   let editor;
@@ -11,8 +11,8 @@
 
   export function createNewModel(text, type) {
     let model = monaco.editor.createModel(text, type);
-    model.onDidChangeContent((e) => {
-      dispatch("didContentChange", {
+    model.onDidChangeContent(e => {
+      dispatch('didContentChange', {
         value: model.getValue(),
       });
     });
@@ -37,8 +37,7 @@
   }
 
   export function layout() {
-    console.log("cool");
-    //editor.layout({});
+    editor.layout();
   }
 
   const dispatch = createEventDispatcher();
@@ -49,32 +48,35 @@
       tabSize: 2,
       wordWrapColumn: mode ? 40 : 80,
       wordWrapMinified: true,
-      wrappingIndent: "indent",
+      wrappingIndent: 'indent',
       scrollBeyondLastLine: mode ? false : true,
       readOnly: readonly,
-      wordWrap: "on",
+      wordWrap: 'on',
+      automaticLayout: true,
       minimap: {
         enabled: false,
       },
     });
   });
 
-  let h;
-  let w;
-  $: if (w && h && editor) {
-    editor.layout();
+  function handleKeydown(event) {
+    if (
+      event.key === 'r' &&
+      (typeof navigator !== 'undefined' && navigator.platform === 'MacIntel'
+        ? event.metaKey
+        : event.ctrlKey)
+    ) {
+      event.preventDefault();
+      editor.layout();
+    }
   }
 </script>
 
+<svelte:window on:keydown={handleKeydown} />
+<div id="container" bind:this={editorDOM} />
+
 <style>
   div {
-    width: 100%;
     height: 100%;
   }
 </style>
-
-<div
-  bind:clientWidth={w}
-  bind:clientHeight={h}
-  id="container"
-  bind:this={editorDOM} />

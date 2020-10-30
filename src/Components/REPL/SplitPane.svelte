@@ -1,6 +1,9 @@
 <script>
   import * as yootils from 'yootils';
   import { createEventDispatcher } from 'svelte';
+  import { getContext } from 'svelte';
+
+  const { layout } = getContext('REPL');
 
   const dispatch = createEventDispatcher();
 
@@ -54,6 +57,7 @@
 
       const onmouseup = () => {
         dragging = false;
+        layout();
 
         window.removeEventListener('mousemove', callback, false);
         window.removeEventListener('mouseup', onmouseup, false);
