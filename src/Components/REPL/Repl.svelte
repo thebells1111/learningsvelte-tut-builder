@@ -237,6 +237,10 @@
     },
   });
 
+  export function focus() {
+    module_editor.focus();
+  }
+
   export function handle_select(component) {
     //creates a model and adds it to the component object for new components
     if (!component.model) {
@@ -300,6 +304,13 @@
         {injectedJS}
         {injectedCSS}
       />
+      <div
+        class="markdown-preview"
+        class:show-markdown-preview={$showMarkdownPreview}
+      >
+        {@html htmlContent}
+      </div>
+
     </section>
   </SplitPane>
 </div>
@@ -331,18 +342,6 @@
     height: 100%;
   }
 
-  .output-viewer {
-    position: relative;
-    padding: 42px 0 0 0;
-  }
-
-  .output-viewer > :global(*):first-child {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 42px;
-  }
-
   .markdown-preview {
     position: absolute;
     background-color: white;
@@ -352,6 +351,9 @@
     width: calc(100% - 1px) !important;
     display: none;
     padding: 1em;
+    height: 100%;
+    overflow: auto;
+    word-wrap: break-word;
   }
 
   .show-markdown-preview {

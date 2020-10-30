@@ -49,7 +49,7 @@
         );
         $appB = {};
         $appB.components = folderToComponents(appBFolders);
-        //$mde.value($directories[$projectName][$chapterName].text);
+        $mde.value($directories[$projectName][$chapterName].text);
         $markdownContent = $directories[$projectName][$chapterName].text;
         repl.set($appA);
         $currentComponent = $folders[0];
@@ -102,7 +102,7 @@
     $appA.components = folderToComponents($folders);
     $appB = { ...$appA };
 
-    //$mde.value($directories[$projectName][$chapterName].text);
+    $mde.value($directories[$projectName][$chapterName].text);
     $markdownContent = $directories[$projectName][$chapterName].text;
     repl.set($appB);
     $currentComponent = $folders[0];

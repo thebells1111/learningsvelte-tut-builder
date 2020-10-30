@@ -2,8 +2,7 @@
   import { onMount, getContext } from 'svelte';
   import SimpleMDE from 'simplemde';
 
-  export let markdownContent = '';
-  const { mde } = getContext('Controls');
+  const { mde, markdownContent } = getContext('Controls');
 
   onMount(() => {
     $mde = new SimpleMDE({
@@ -41,7 +40,7 @@
       ],
     });
     $mde.codemirror.on('change', function() {
-      markdownContent = $mde.value();
+      $markdownContent = $mde.value();
     });
     $mde.value('');
   });
@@ -54,7 +53,6 @@
     resize: none;
     overflow: auto;
     border: none;
-
     width: 100%;
     height: 100%;
   }
@@ -81,5 +79,6 @@
   }
   :global(#editor > .CodeMirror) {
     flex-grow: 1;
+    font-size: 0.9em;
   }
 </style>

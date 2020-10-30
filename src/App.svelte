@@ -137,7 +137,7 @@
     $chapters = $directories[$projectName].chapterNames;
 
     function mount() {
-      if (repl) {
+      if (repl && $mde) {
         initializeApp();
       } else {
         setTimeout(mount, 1);
@@ -147,7 +147,7 @@
   });
 
   function initializeApp() {
-    //$mde.value($directories[$projectName][$chapterName].text);
+    $mde.value($directories[$projectName][$chapterName].text);
     $markdownContent = $directories[$projectName][$chapterName].text;
 
     $folders = filesToTreeNodes(
@@ -183,8 +183,8 @@
 <AppControls {repl} bind:htmlContent />
 <panel-container use:splitPane>
   <div id="editor">
-    <textarea bind:value={$markdownContent} />
-    <!-- <MarkdownEditor bind:markdownContent /> -->
+    <!-- <textarea bind:value={$markdownContent} /> -->
+    <MarkdownEditor />
   </div>
 
   <div id="repl">
@@ -213,14 +213,6 @@
     flex-direction: column;
     border-right: 1px solid gray;
     width: 100%;
-  }
-
-  textarea {
-    width: 100%;
     height: 100%;
-    resize: none;
-    padding: 0.5em;
-    border: none;
-    outline: none;
   }
 </style>

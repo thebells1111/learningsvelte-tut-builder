@@ -50,7 +50,7 @@
   </div>
 </div>
 
-<div>
+<style>
   .editor-wrapper {
     z-index: 5;
     background: var(--back-light);
@@ -75,4 +75,4 @@
     height: auto;
     /* height: 100%; */
   }
-</div>
+</style>

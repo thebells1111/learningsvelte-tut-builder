@@ -245,7 +245,7 @@ pre code {
 
 /* sync CodeMirror with prism  */
 .CodeMirror {
-  font-size: var(--code-fs) !important;
+  font-size: var(--code-fs);
 }
 
 ::selection {
