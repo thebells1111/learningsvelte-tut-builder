@@ -75,7 +75,6 @@
   }
 
   function format() {
-    console.log(editor.getValue());
     let code = sveltePlugin.format(editor.getValue(), {
       parser: 'svelte',
       plugins: [sveltePlugin],
