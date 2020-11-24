@@ -5,7 +5,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var doc = require('prettier/doc');
 var standalone = require('prettier/standalone');
 var parserHtml = require('prettier/parser-html');
-var parserBabel = require('prettier/parser-babylon');
+var parserBabel = require('prettier/parser-babel');
 var parserPostcss = require('prettier/parser-postcss');
 var escodegen = require('escodegen');
 var compiler = require('svelte/compiler');
@@ -33,7 +33,7 @@ function createCommonjsModule(fn, basedir, module) {
     (module = {
       path: basedir,
       exports: {},
-      require: function(path, base) {
+      require: function (path, base) {
         return commonjsRequire(
           path,
           base === undefined || base === null ? module.path : base
@@ -51,7 +51,7 @@ function commonjsRequire() {
   );
 }
 
-var plugin = createCommonjsModule(function(module, exports) {
+var plugin = createCommonjsModule(function (module, exports) {
   Object.defineProperty(exports, '__esModule', { value: true });
 
   const { format } = standalone__default['default'];
@@ -151,7 +151,7 @@ var plugin = createCommonjsModule(function(module, exports) {
   function isPreTagContent(path) {
     const stack = path.stack;
     return stack.some(
-      node =>
+      (node) =>
         (node.type === 'Element' && node.name.toLowerCase() === 'pre') ||
         (node.type === 'Attribute' &&
           !formattableAttributes.includes(node.name))
@@ -355,7 +355,7 @@ var plugin = createCommonjsModule(function(module, exports) {
     if (isASTNode(parent)) {
       parent = parent.html;
     }
-    return getChildren(parent).find(child => child.start === node.end);
+    return getChildren(parent).find((child) => child.start === node.end);
   }
   function isEmptyNode(node) {
     return node.type === 'Text' && (node.raw || node.data).trim() === '';
@@ -381,7 +381,7 @@ var plugin = createCommonjsModule(function(module, exports) {
   function getAttributeValue(attributeName, node) {
     const attributes = node['attributes'];
     const langAttribute = attributes.find(
-      attribute => attribute.name === attributeName
+      (attribute) => attribute.name === attributeName
     );
     return langAttribute && langAttribute.value;
   }
@@ -463,7 +463,7 @@ var plugin = createCommonjsModule(function(module, exports) {
     return false;
   }
   function isEmptyGroup(group) {
-    return !group.find(doc => !isEmptyDoc(doc));
+    return !group.find((doc) => !isEmptyDoc(doc));
   }
   /**
    * Trims both leading and trailing nodes matching `isWhitespace` independent of nesting level
@@ -479,7 +479,7 @@ var plugin = createCommonjsModule(function(module, exports) {
    * and returnes the removed nodes.
    */
   function trimLeft(group, isWhitespace) {
-    let firstNonWhitespace = group.findIndex(doc => !isWhitespace(doc));
+    let firstNonWhitespace = group.findIndex((doc) => !isWhitespace(doc));
     if (firstNonWhitespace < 0 && group.length) {
       firstNonWhitespace = group.length;
     }
@@ -498,7 +498,7 @@ var plugin = createCommonjsModule(function(module, exports) {
    */
   function trimRight(group, isWhitespace) {
     let lastNonWhitespace = group.length
-      ? findLastIndex(doc => !isWhitespace(doc), group)
+      ? findLastIndex((doc) => !isWhitespace(doc), group)
       : 0;
     if (lastNonWhitespace < group.length - 1) {
       return group.splice(lastNonWhitespace + 1);
@@ -583,7 +583,7 @@ var plugin = createCommonjsModule(function(module, exports) {
           }
         },
       };
-      parseSortOrder(options$$1.svelteSortOrder).forEach(p => addParts[p]());
+      parseSortOrder(options$$1.svelteSortOrder).forEach((p) => addParts[p]());
       ignoreNext = false;
       return group(join(hardline, parts));
     }
@@ -650,7 +650,7 @@ var plugin = createCommonjsModule(function(module, exports) {
         const isSupportedLanguage = !(
           node.name === 'template' && !isNodeSupportedLanguage(node)
         );
-        const isEmpty = node.children.every(child => isEmptyNode(child));
+        const isEmpty = node.children.every((child) => isEmptyNode(child));
         const isSelfClosingTag =
           isEmpty &&
           (!options$$1.svelteStrictMode ||
@@ -682,7 +682,10 @@ var plugin = createCommonjsModule(function(module, exports) {
                         close,
                       ])
                     : '',
-                  ...path.map(childPath => childPath.call(print), 'attributes'),
+                  ...path.map(
+                    (childPath) => childPath.call(print),
+                    'attributes'
+                  ),
                   options$$1.svelteBracketNewLine
                     ? dedent(isSelfClosingTag ? line : softline)
                     : '',
@@ -704,7 +707,7 @@ var plugin = createCommonjsModule(function(module, exports) {
             indent(
               group(
                 concat(
-                  path.map(childPath => childPath.call(print), 'attributes')
+                  path.map((childPath) => childPath.call(print), 'attributes')
                 )
               )
             ),
@@ -780,18 +783,18 @@ var plugin = createCommonjsModule(function(module, exports) {
           const def = [
             '{:else if ',
             path.map(
-              ifPath => printJS(path, print, 'expression'),
+              (ifPath) => printJS(path, print, 'expression'),
               'children'
             )[0],
             '}',
             path.map(
-              ifPath => printIndentedWithNewlines(ifPath, print),
+              (ifPath) => printIndentedWithNewlines(ifPath, print),
               'children'
             )[0],
           ];
           if (ifNode.else) {
             def.push(
-              path.map(ifPath => ifPath.call(print, 'else'), 'children')[0]
+              path.map((ifPath) => ifPath.call(print, 'else'), 'children')[0]
             );
           }
           return group(concat(def));
@@ -822,10 +825,10 @@ var plugin = createCommonjsModule(function(module, exports) {
       }
       case 'AwaitBlock': {
         const hasPendingBlock = node.pending.children.some(
-          n => !isEmptyNode(n)
+          (n) => !isEmptyNode(n)
         );
-        const hasThenBlock = node.then.children.some(n => !isEmptyNode(n));
-        const hasCatchBlock = node.catch.children.some(n => !isEmptyNode(n));
+        const hasThenBlock = node.then.children.some((n) => !isEmptyNode(n));
+        const hasCatchBlock = node.catch.children.some((n) => !isEmptyNode(n));
         let block = [];
         if (!hasPendingBlock && hasThenBlock) {
           block.push(
@@ -1017,7 +1020,7 @@ var plugin = createCommonjsModule(function(module, exports) {
     throw new Error('unknown node type: ' + node.type);
   }
   function printAttributeNodeValue(path, print, quotes, node) {
-    const valueDocs = path.map(childPath => childPath.call(print), 'value');
+    const valueDocs = path.map((childPath) => childPath.call(print), 'value');
     if (!quotes || !formattableAttributes.includes(node.name)) {
       return concat(valueDocs);
     } else {
@@ -1085,14 +1088,14 @@ var plugin = createCommonjsModule(function(module, exports) {
      * desired to have text directly wrapping a mustache tag without additional whitespace.
      */
     function flush() {
-      let groupDocs = currentGroup.map(item => item.doc);
-      const groupNodes = currentGroup.map(item => item.node);
+      let groupDocs = currentGroup.map((item) => item.doc);
+      const groupNodes = currentGroup.map((item) => item.node);
       for (let doc of extractOutermostNewlines(groupDocs)) {
         outputChildDoc(doc, groupNodes);
       }
       currentGroup = [];
     }
-    path.each(childPath => {
+    path.each((childPath) => {
       const childNode = childPath.getValue();
       const childDoc = childPath.call(print);
       if (isInlineNode(childNode)) {
@@ -1136,7 +1139,7 @@ var plugin = createCommonjsModule(function(module, exports) {
    */
   function splitTextToDocs(text) {
     let docs = text.split(/[\t\n\f\r ]+/);
-    docs = join(line, docs).parts.filter(s => s !== '');
+    docs = join(line, docs).parts.filter((s) => s !== '');
     // if the text starts with two newlines, the first doc is already a newline. make it "keepIfLonely"
     if (text.match(/^([\t\f\r ]*\n){2}/)) {
       docs[0] = keepIfLonelyLine;
@@ -1191,14 +1194,7 @@ var plugin = createCommonjsModule(function(module, exports) {
     }
     switch (node.type) {
       case 'ArrayPattern':
-        return (
-          ' [' +
-          node.elements
-            .map(expandNode)
-            .join(',')
-            .slice(1) +
-          ']'
-        );
+        return ' [' + node.elements.map(expandNode).join(',').slice(1) + ']';
       case 'AssignmentPattern':
         return expandNode(node.left) + ' =' + expandNode(node.right);
       case 'Identifier':
@@ -1240,7 +1236,7 @@ var plugin = createCommonjsModule(function(module, exports) {
   ];
   const parsers = {
     svelte: {
-      parse: text => {
+      parse: (text) => {
         try {
           return Object.assign({}, compiler__default['default'].parse(text), {
             __isRoot: true,
@@ -1257,7 +1253,7 @@ var plugin = createCommonjsModule(function(module, exports) {
           throw err;
         }
       },
-      preprocess: text => {
+      preprocess: (text) => {
         text = snipTagContent('style', text);
         text = snipTagContent('script', text, '');
         return text.trim();
