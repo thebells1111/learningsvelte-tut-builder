@@ -17,6 +17,8 @@
     folderToComponents,
     filesToTreeNodes,
     markdownContent,
+    extract_frontmatter,
+    mdTextTitle,
   } = getContext('Controls');
   let newChapterName = '';
 
@@ -49,8 +51,13 @@
         );
         $appB = {};
         $appB.components = folderToComponents(appBFolders);
-        $mde.value($directories[$projectName][$chapterName].text);
-        $markdownContent = $directories[$projectName][$chapterName].text;
+
+        const { metadata, content } = extract_frontmatter(
+          $directories[$projectName][$chapterName].text
+        );
+        $mde.value(content);
+        $mdTextTitle = metadata.title;
+
         repl.set($appA);
         $currentComponent = $folders[0];
         repl.handle_select($currentComponent);
@@ -65,7 +72,7 @@
   }
 
   function enterNewChapter() {
-    let chapterNumbers = $chapters.map(v => {
+    let chapterNumbers = $chapters.map((v) => {
       return parseInt(v);
     });
     let nextChapterNumber = chapterNumbers[chapterNumbers.length - 1] + 1;

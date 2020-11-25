@@ -2,7 +2,9 @@
   import { onMount, getContext } from 'svelte';
   import SimpleMDE from 'simplemde';
 
-  const { mde, markdownContent, mdTextTitle } = getContext('Controls');
+  const { mde, markdownContent, mdTextTitle, extract_frontmatter } = getContext(
+    'Controls'
+  );
 
   onMount(() => {
     $mde = new SimpleMDE({
@@ -43,6 +45,21 @@
       $markdownContent = $mde.value();
     });
     $mde.value('');
+
+    let i = 0;
+    setTimeout(initializeMD, 100);
+
+    function initializeMD() {
+      if (i < 50) {
+        if ($markdownContent) {
+          const { metadata, content } = extract_frontmatter($markdownContent);
+          $mde.value(content);
+          $mdTextTitle = metadata.title;
+        } else {
+          setTimeout(initializeMD, 100);
+        }
+      }
+    }
   });
 </script>
 

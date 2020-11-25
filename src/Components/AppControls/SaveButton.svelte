@@ -9,11 +9,15 @@
     appA,
     appB,
     mde,
+    mdTextTitle,
   } = getContext('Controls');
 
   function saveApp() {
     let dir = {};
-    dir.text = $mde.value();
+    dir.text = `---
+title: ${$mdTextTitle}
+---
+${$mde.value()}`;
     dir['app-a'] = $appA.components.map((v) => {
       let comp = {};
       comp.webkitRelativePath = `${v.name}.${v.type}`;

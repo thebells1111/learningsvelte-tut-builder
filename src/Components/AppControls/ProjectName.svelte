@@ -18,6 +18,8 @@
     currentComponent,
     unsavedState,
     markdownContent,
+    extract_frontmatter,
+    mdTextTitle,
   } = getContext('Controls');
   let newProjectName;
 
@@ -47,7 +49,7 @@
   }
 
   function enterNewProject(e) {
-    let projectNumbers = $projects.map(v => {
+    let projectNumbers = $projects.map((v) => {
       return parseInt(v);
     });
     let nextProjectNumber = projectNumbers[projectNumbers.length - 1] + 1;
@@ -88,8 +90,11 @@
         $appB = undefined;
       }
 
-      $mde.value($directories[$projectName][$chapterName].text);
-      $markdownContent = $directories[$projectName][$chapterName].text;
+      const { metadata, content } = extract_frontmatter(
+        $directories[$projectName][$chapterName].text
+      );
+      $mde.value(content);
+      $mdTextTitle = metadata.title;
 
       $folders = filesToTreeNodes(
         $directories[$projectName][$chapterName]['app-a']

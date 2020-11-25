@@ -2,7 +2,7 @@
   import AppControls from './Components/AppControls/';
   import MarkdownEditor from './Components/MarkdownEditor.svelte';
   import Repl from './components/Repl/Repl.svelte';
-  //import directoriesJSON from './directories.json';
+  // import directoriesJSON from './directories.json';
   import folderToComponents from '../utils/folderToComponents';
   import filesToTreeNodes from '../utils/filesToTreeNodes';
   import componentsToFolder from '../utils/componentsToFolder';
@@ -92,6 +92,25 @@
     }
   }
 
+  function extract_frontmatter(markdown) {
+    const match = /---\r?\n([\s\S]+?)\r?\n---/.exec(markdown);
+
+    if (match) {
+      const frontMatter = match[1];
+      const content = markdown.slice(match[0].length);
+
+      const metadata = {};
+      frontMatter.split('\n').forEach((pair) => {
+        const colonIndex = pair.indexOf(':');
+        metadata[pair.slice(0, colonIndex).trim()] = pair
+          .slice(colonIndex + 1)
+          .trim();
+      });
+
+      return { metadata, content };
+    }
+  }
+
   setContext('Controls', {
     appA,
     appB,
@@ -110,6 +129,7 @@
     currentComponent,
     componentsToFolder,
     updateApps,
+    extract_frontmatter,
     Prism,
     unsavedState,
     markdownContent,
@@ -158,9 +178,11 @@
       $directories[$projectName][$chapterName]['app-a']
     );
     $appA.components = folderToComponents($folders);
-    $appB.components = folderToComponents(
-      filesToTreeNodes($directories[$projectName][$chapterName]['app-b'])
-    );
+    $appB.components = $directories[$projectName][$chapterName]['app-b']
+      ? folderToComponents(
+          filesToTreeNodes($directories[$projectName][$chapterName]['app-b'])
+        )
+      : $appB.components;
     repl.set($appA);
     $currentComponent = $folders[0];
 
