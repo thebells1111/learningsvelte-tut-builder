@@ -33,6 +33,7 @@
     updateApps,
     currentComponent,
     unsavedState,
+    selected,
   } = getContext('Controls');
 
   export function toJSON() {
@@ -45,7 +46,7 @@
   // this gets called by the parent component on initialization, typically using onMount
   export async function set(data) {
     //this creates a model and adds it to the component object for the initial components
-    data.components.forEach(component => {
+    data.components.forEach((component) => {
       component.model = module_editor.createNewModel(
         component.source,
         component.type === 'svelte' ? 'html' : component.type
@@ -79,7 +80,7 @@
     const { name, type } = $selected || {};
 
     components.set(data.components);
-    data.components.forEach(component => {
+    data.components.forEach((component) => {
       if (!component.model) {
         component.model = module_editor.createNewModel(
           component.source,
@@ -89,7 +90,7 @@
     });
 
     const matched_component = data.components.find(
-      file => file.name === name && file.type === type
+      (file) => file.name === name && file.type === type
     );
     selected.set(matched_component || data.components[0]);
 
@@ -115,7 +116,6 @@
   const dispatch = createEventDispatcher();
 
   const components = writable([]);
-  const selected = writable(null);
   const bundle = writable(null);
 
   const compile_options = writable({
@@ -140,10 +140,12 @@
 
   // TODO this is a horrible kludge, written in a panic. fix it
   let fulfil_module_editor_ready;
-  let module_editor_ready = new Promise(f => (fulfil_module_editor_ready = f));
+  let module_editor_ready = new Promise(
+    (f) => (fulfil_module_editor_ready = f)
+  );
 
   let fulfil_output_ready;
-  let output_ready = new Promise(f => (fulfil_output_ready = f));
+  let output_ready = new Promise((f) => (fulfil_output_ready = f));
 
   setContext('REPL', {
     components,
@@ -153,13 +155,13 @@
     rebundle,
     htmlContent,
 
-    navigate: item => {
+    navigate: (item) => {
       const match = /^(.+)\.(\w+)$/.exec(item.filename);
       if (!match) return; // ???
 
       const [, name, type] = match;
       const component = $components.find(
-        c => c.name === name && c.type === type
+        (c) => c.name === name && c.type === type
       );
       handle_select(component);
 
@@ -174,14 +176,14 @@
       // TODO select the line/column in question
     },
 
-    handle_delete: component => {
+    handle_delete: (component) => {
       console.log(component);
       module_editor.deleteModel(component);
     },
 
-    handle_change: event => {
+    handle_change: (event) => {
       $unsavedState = true;
-      selected.update(component => {
+      selected.update((component) => {
         // TODO this is a bit hacky — we're relying on mutability
         // so that updating components works... might be better
         // if a) components had unique IDs, b) we tracked selected
@@ -279,7 +281,7 @@
       workersUrl,
       packagesUrl,
       svelteUrl,
-      onstatus: message => {
+      onstatus: (message) => {
         status = message;
       },
     });
@@ -356,7 +358,6 @@
       >
         {@html htmlContent}
       </div>
-
     </section>
   </SplitPane>
 </div>

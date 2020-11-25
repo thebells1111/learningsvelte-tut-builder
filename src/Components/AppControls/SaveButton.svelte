@@ -14,7 +14,7 @@
   function saveApp() {
     let dir = {};
     dir.text = $mde.value();
-    dir['app-a'] = $appA.components.map(v => {
+    dir['app-a'] = $appA.components.map((v) => {
       let comp = {};
       comp.webkitRelativePath = `${v.name}.${v.type}`;
       comp.source = v.source;
@@ -22,8 +22,11 @@
       return comp;
     });
 
+    console.log($appB);
+
     if ($appB && $appB.components.length === 1 && $appB.components[0].source) {
-      dir['app-b'] = $appB.components.map(v => {
+      console.log($appB.components);
+      dir['app-b'] = $appB.components.map((v) => {
         let comp = {};
         comp.webkitRelativePath = `${v.name}.${v.type}`;
         comp.source = v.source;
@@ -32,9 +35,13 @@
       });
     }
 
+    console.log(dir);
+
     $unsavedState = false;
     $directories[$projectName][$chapterName] = dir;
+    console.log($directories[$projectName][$chapterName]);
     localStorage.setItem('directories', JSON.stringify($directories));
+    console.log(JSON.parse(localStorage.getItem('directories')));
   }
 
   function handleKeydown(event) {

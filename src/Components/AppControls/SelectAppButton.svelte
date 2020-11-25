@@ -1,17 +1,24 @@
 <script>
   import { getContext } from 'svelte';
   export let repl;
-  const { appA, appB, currentApp, folders, componentsToFolder } = getContext(
-    'Controls'
-  );
+  const {
+    appA,
+    appB,
+    currentApp,
+    folders,
+    componentsToFolder,
+    currentComponent,
+  } = getContext('Controls');
 
   function setApp() {
     if ($appB) {
       $currentApp = $currentApp === 'A' ? 'B' : 'A';
-      let newApp = $currentApp === 'A' ? { ...$appA } : { ...$appB };
+      let newApp = $currentApp === 'A' ? $appA : $appB;
       $folders = componentsToFolder(newApp.components);
-      //newApp.selectedComponent = repl.get_selected_component();
+      $currentComponent = $folders[0];
       repl.set(newApp);
+      repl.handle_select($currentComponent);
+      repl.focus();
     }
   }
 </script>

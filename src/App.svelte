@@ -14,7 +14,7 @@
 
   marked.setOptions({
     breaks: true,
-    highlight: function(code, lang) {
+    highlight: function (code, lang) {
       if (Prism.languages[lang]) {
         return Prism.highlight(code, Prism.languages[lang], lang);
       } else {
@@ -81,6 +81,7 @@
   const currentComponent = writable('');
   const unsavedState = writable(false);
   const markdownContent = writable('');
+  const selected = writable(null);
 
   function updateApps(components) {
     if ($currentApp === 'A') {
@@ -111,6 +112,7 @@
     Prism,
     unsavedState,
     markdownContent,
+    selected,
   });
 
   onMount(() => {
@@ -154,6 +156,9 @@
       $directories[$projectName][$chapterName]['app-a']
     );
     $appA.components = folderToComponents($folders);
+    $appB.components = folderToComponents(
+      filesToTreeNodes($directories[$projectName][$chapterName]['app-a'])
+    );
     repl.set($appA);
     $currentComponent = $folders[0];
 
