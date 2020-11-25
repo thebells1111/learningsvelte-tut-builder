@@ -22,8 +22,6 @@
       return comp;
     });
 
-    console.log($appB);
-
     if ($appB && $appB.components.length === 1 && $appB.components[0].source) {
       console.log($appB.components);
       dir['app-b'] = $appB.components.map((v) => {
@@ -35,11 +33,8 @@
       });
     }
 
-    console.log(dir);
-
     $unsavedState = false;
     $directories[$projectName][$chapterName] = dir;
-    console.log($directories[$projectName][$chapterName]);
     localStorage.setItem('directories', JSON.stringify($directories));
     console.log(JSON.parse(localStorage.getItem('directories')));
   }

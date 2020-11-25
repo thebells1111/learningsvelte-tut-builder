@@ -82,6 +82,7 @@
   const unsavedState = writable(false);
   const markdownContent = writable('');
   const selected = writable(null);
+  const mdTextTitle = writable('Enter Title Here');
 
   function updateApps(components) {
     if ($currentApp === 'A') {
@@ -113,6 +114,7 @@
     unsavedState,
     markdownContent,
     selected,
+    mdTextTitle,
   });
 
   onMount(() => {
@@ -157,7 +159,7 @@
     );
     $appA.components = folderToComponents($folders);
     $appB.components = folderToComponents(
-      filesToTreeNodes($directories[$projectName][$chapterName]['app-a'])
+      filesToTreeNodes($directories[$projectName][$chapterName]['app-b'])
     );
     repl.set($appA);
     $currentComponent = $folders[0];

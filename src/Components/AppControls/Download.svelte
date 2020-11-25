@@ -17,14 +17,14 @@
       data: $mde.value(),
     });
     files.push(
-      ...a.map(component => ({
+      ...a.map((component) => ({
         path: `${$chapterName}/app-a/${component.name}.${component.type}`,
         data: component.source,
       }))
     );
 
     files.push(
-      ...b.map(component => ({
+      ...b.map((component) => ({
         path: `${$chapterName}/app-b/${component.name}.${component.type}`,
         data: component.source,
       }))
@@ -32,7 +32,7 @@
 
     console.log(files);
 
-    //downloadBlob(doNotZip.toBlob(files), `${$chapterName}.zip`);
+    downloadBlob(doNotZip.toBlob(files), `${$chapterName}.zip`);
 
     downloading = false;
   }

@@ -2,7 +2,7 @@
   import { onMount, getContext } from 'svelte';
   import SimpleMDE from 'simplemde';
 
-  const { mde, markdownContent } = getContext('Controls');
+  const { mde, markdownContent, mdTextTitle } = getContext('Controls');
 
   onMount(() => {
     $mde = new SimpleMDE({
@@ -39,13 +39,14 @@
         'clean-block',
       ],
     });
-    $mde.codemirror.on('change', function() {
+    $mde.codemirror.on('change', function () {
       $markdownContent = $mde.value();
     });
     $mde.value('');
   });
 </script>
 
+<input bind:value={$mdTextTitle} />
 <textarea />
 
 <style>
